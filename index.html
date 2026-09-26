@@ -1,0 +1,3760 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NETCODES TOOL — Plataforma profissional para serviços Android</title>
+<meta name="description" content="Ferramenta profissional para diagnóstico e manutenção de dispositivos móveis." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   RESET & TOKENS
+   ========================================================= */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --purple: #5230a0;
+  --purple-dark: #3d2278;
+  --purple-light: #f4f0fc;
+  --purple-glow: rgba(82, 48, 160, 0.28);
+  --text-dark: #0f0f14;
+  --text: #232328;
+  --text-gray: #6a6a75;
+  --border: #e6e6ec;
+  --border-soft: #f0f0f4;
+  --bg: #ffffff;
+  --bg-alt: #fafafb;
+  --green: #28a05a;
+  --red: #be3232;
+  --shadow-sm: 0 1px 2px rgba(15, 15, 20, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 15, 20, 0.06);
+  --shadow-lg: 0 20px 60px rgba(15, 15, 20, 0.12);
+  --shadow-purple: 0 20px 60px rgba(82, 48, 160, 0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input { font-family: inherit; }
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+.view { display: none; }
+.view.active { display: block; }
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: -0.03em;
+  box-shadow: 0 6px 16px var(--purple-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-gray);
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover { color: var(--text-dark); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-signin {
+  padding: 9px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--purple);
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px var(--purple-glow);
+}
+
+.nav-signin:hover {
+  background: var(--purple-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px var(--purple-glow);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+}
+
+.menu-toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--text-dark);
+  transition: 0.2s;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+  padding: 160px 32px 70px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(82, 48, 160, 0.08), transparent 60%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(82, 48, 160, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(82, 48, 160, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent 80%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 4.8vw, 56px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  margin-top: 6px;
+}
+
+.hero p.lead {
+  font-size: clamp(15.5px, 1.7vw, 18px);
+  color: var(--text-gray);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   PREVIEW DA TOOL
+   ========================================================= */
+.preview-section {
+  padding: 0 32px 60px;
+  background: var(--bg);
+}
+
+.preview-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.preview-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, var(--purple-glow), transparent 70%);
+  z-index: -1;
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.preview-window {
+  background: #fff;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(15, 15, 20, 0.18), 0 8px 24px rgba(15, 15, 20, 0.08);
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-body {
+  flex: 1;
+  position: relative;
+  background: #f8f8fa;
+  overflow: hidden;
+}
+
+.preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.preview-placeholder {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8f6fd 0%, #f0ecfa 100%);
+  padding: 30px;
+  text-align: center;
+}
+
+.preview-placeholder-icon {
+  width: 64px; height: 64px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple);
+  box-shadow: 0 12px 32px rgba(82, 48, 160, 0.15);
+  flex-shrink: 0;
+}
+
+.preview-placeholder-icon svg { width: 30px; height: 30px; }
+
+.preview-placeholder h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.preview-placeholder p {
+  font-size: 13px;
+  color: var(--text-gray);
+  max-width: 340px;
+  line-height: 1.55;
+}
+
+.preview-placeholder code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  background: #fff;
+  padding: 3px 8px;
+  color: var(--purple);
+  border: 1px solid var(--border);
+}
+
+/* =========================================================
+   DOWNLOAD
+   ========================================================= */
+.download-section {
+  padding: 20px 32px 100px;
+  background: var(--bg);
+}
+
+.download-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.download-btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 40px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 16px 40px var(--purple-glow), inset 0 1px 0 rgba(255,255,255,0.15);
+  letter-spacing: -0.01em;
+}
+
+.download-btn-main:hover {
+  background: var(--purple-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px var(--purple-glow);
+}
+
+.download-btn-main svg { width: 22px; height: 22px; }
+
+.download-info-line {
+  font-size: 13.5px;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.download-info-line span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-info-line .dot-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-gray);
+  opacity: 0.4;
+}
+
+/* =========================================================
+   SEÇÕES
+   ========================================================= */
+.section { padding: 100px 32px; }
+.section.alt { background: var(--bg-alt); }
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-head {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 60px;
+}
+
+.section-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: var(--purple-light);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-head h2 {
+  font-size: clamp(28px, 3.8vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+.section-head p {
+  font-size: 16.5px;
+  color: var(--text-gray);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.feature {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 30px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--purple), #7a55c9);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  border-color: rgba(82, 48, 160, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature:hover::before { opacity: 1; }
+
+.feature-icon {
+  width: 50px; height: 50px;
+  background: var(--purple-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--purple);
+  transition: all 0.3s;
+}
+
+.feature:hover .feature-icon {
+  background: var(--purple);
+  color: #fff;
+}
+
+.feature-icon svg { width: 23px; height: 23px; }
+
+.feature h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.feature p {
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   STEPS
+   ========================================================= */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+}
+
+.step {
+  text-align: center;
+  padding: 16px;
+}
+
+.step-number {
+  width: 54px; height: 54px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-weight: 800;
+  box-shadow: 0 12px 28px var(--purple-glow);
+}
+
+.step h3 {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.step p {
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   FAQ
+   ========================================================= */
+.faq {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.faq-item[open] {
+  border-color: rgba(82, 48, 160, 0.25);
+  box-shadow: var(--shadow-md);
+}
+
+.faq-item summary {
+  padding: 20px 24px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: color 0.2s;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--purple);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item summary:hover { color: var(--purple); }
+
+.faq-answer {
+  padding: 0 24px 22px;
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.7;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  padding: 40px 32px;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-inner p {
+  font-size: 13.5px;
+  color: var(--text-gray);
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn {
+  width: 38px; height: 38px;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+
+.social-btn svg { width: 16px; height: 16px; }
+
+/* =========================================================
+   LOGIN VIEW
+   ========================================================= */
+#loginView {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+#loginView.active { display: flex; }
+
+.login-split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.login-form-side {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  background: #fff;
+  position: relative;
+}
+
+.login-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-gray);
+  padding: 8px 0;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.back-link:hover { color: var(--purple); }
+.back-link svg { width: 16px; height: 16px; }
+
+.login-form-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.login-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: var(--text-gray);
+  line-height: 1.5;
+  margin-bottom: 36px;
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-gray);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.auth-tab.active {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+
+.auth-field { margin-bottom: 18px; }
+
+.auth-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+  color: var(--text);
+  background: #fff;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.auth-field input:focus { border-color: var(--purple); }
+
+.auth-status {
+  font-size: 13.5px;
+  line-height: 1.5;
+  min-height: 20px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.auth-status.error { color: var(--red); }
+.auth-status.success { color: var(--purple); }
+.auth-status.info { color: var(--text-gray); }
+
+.auth-submit {
+  width: 100%;
+  padding: 15px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+  margin-top: 8px;
+  letter-spacing: -0.01em;
+}
+
+.auth-submit:hover { background: var(--purple-dark); }
+.auth-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.auth-footnote {
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: var(--text-gray);
+  text-align: center;
+}
+
+.auth-footnote a {
+  color: var(--purple);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-footnote a:hover { text-decoration: underline; }
+
+.login-brand-side {
+  background: linear-gradient(135deg, #5230a0 0%, #3d2278 100%);
+  color: #fff;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-brand-side::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.login-brand-side::after {
+  content: '';
+  position: absolute;
+  bottom: -150px; left: -100px;
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.brand-side-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-side-logo .logo-mark {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.brand-side-content {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+}
+
+.brand-side-content h2 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.brand-side-content p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.65;
+}
+
+.brand-side-foot {
+  position: relative;
+  z-index: 1;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #fff;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-links.active { display: flex; }
+  .nav-links li { border-bottom: 1px solid var(--border); }
+  .nav-links li:last-child { border-bottom: none; }
+
+  .nav-links a { display: block; padding: 14px 12px; }
+
+  .nav-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 0 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-signin { text-align: center; }
+
+  .menu-toggle { display: flex; }
+
+  .hero { padding: 130px 24px 60px; }
+  .section { padding: 70px 24px; }
+  .preview-section { padding: 0 24px 40px; }
+  .download-section { padding: 10px 24px 70px; }
+
+  .preview-window {
+    aspect-ratio: 4 / 3;
+  }
+
+  .preview-placeholder { padding: 20px; gap: 12px; }
+  .preview-placeholder-icon { width: 52px; height: 52px; }
+  .preview-placeholder-icon svg { width: 24px; height: 24px; }
+  .preview-placeholder h4 { font-size: 14.5px; }
+  .preview-placeholder p { font-size: 12.5px; max-width: 280px; }
+
+  .download-btn-main {
+    width: 100%;
+    justify-content: center;
+    padding: 18px 24px;
+    font-size: 16px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .login-split { grid-template-columns: 1fr; }
+  .login-brand-side { display: none; }
+  .login-form-side { padding: 32px 24px; }
+}
+
+@media (max-width: 560px) {
+  .nav-inner { padding: 14px 20px; }
+  .hero { padding: 110px 20px 50px; }
+  .section { padding: 60px 20px; }
+  .download-section { padding: 10px 20px 60px; }
+
+  .preview-window { aspect-ratio: 1 / 1; }
+
+  .download-info-line {
+    font-size: 12.5px;
+    gap: 10px;
+  }
+
+  .download-info-line .dot-sep { display: none; }
+
+  .login-form-side { padding: 24px 20px; }
+  .login-title { font-size: 28px; }
+}
+
+/* =========================================================
+   ANIMAÇÕES
+   ========================================================= */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { opacity: 0; }
+.reveal.visible { animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+#loginView.active .login-form-wrap {
+  animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     LANDING VIEW
+     ========================================================= -->
+<div class="view active" id="landingView">
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">NC</div>
+        <span>NETCODES TOOL</span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Recursos</a></li>
+        <li><a href="#how">Como funciona</a></li>
+        <li><a href="#faq">Perguntas</a></li>
+        <li class="nav-actions">
+          <a href="javascript:void(0)" class="nav-signin" onclick="showLoginView()">Entrar</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <h1 class="reveal">
+        Ferramenta profissional para diagnóstico
+        <span class="accent">e manutenção de dispositivos móveis</span>
+      </h1>
+
+      <p class="lead reveal">
+        Tenha em um só lugar as principais ferramentas para assistência técnica Android.
+        Identifique dispositivos, consulte informações de hardware e software, trabalhe com ADB,
+        execute operações de manutenção e acesse recursos avançados para diferentes marcas e plataformas.
+      </p>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="preview-section">
+    <div class="preview-inner reveal">
+      <div class="preview-glow"></div>
+      <div class="preview-window">
+        <div class="preview-body">
+          <img src="imagem/netcodes.png"
+               alt="Interface do NETCODES TOOL"
+               class="preview-image"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+          <div class="preview-placeholder">
+            <div class="preview-placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="3"/>
+                <path d="M3 9h18"/>
+                <path d="M8 14l3 3 5-5"/>
+              </svg>
+            </div>
+            <h4>Interface da ferramenta</h4>
+            <p>Adicione uma captura de tela em <code>imagem/netcodes.png</code> para exibi-la aqui.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="download-section" id="download">
+    <div class="download-inner reveal">
+      <button class="download-btn-main" onclick="openDownloadModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Baixar NETCODES TOOL
+      </button>
+
+      <div class="download-info-line">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="3"/>
+            <path d="M3 9h18"/>
+          </svg>
+          Windows 7, 8, 10, 11
+        </span>
+        <span class="dot-sep"></span>
+        <span id="infoVersionLine">Versão 1.0.0</span>
+        <span class="dot-sep"></span>
+        <span id="infoSizeLine">119 MB</span>
+        <span class="dot-sep"></span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Verificado e seguro
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECURSOS -->
+  <section class="section" id="features">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Recursos</span>
+        <h2>Tudo o que você precisa em uma única ferramenta</h2>
+        <p>Feita para técnicos profissionais de celular — rápida, confiável e sempre atualizada.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3z"/>
+              <line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+            </svg>
+          </div>
+          <h3>Ler Informações</h3>
+          <p>Extraia dados técnicos completos de qualquer dispositivo Android conectado — modelo, marca, versão do Android, CPU, memória, bateria e muito mais.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3>Bypass FRP</h3>
+          <p>Remova a proteção FRP (Factory Reset Protection) do Google em dispositivos Android compatíveis. Funciona via ADB, sem abrir o aparelho.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3>Gerador de Código IMEI</h3>
+          <p>Gere códigos de desbloqueio para Mobiwire, Hisense, Tecno, Itel, Mobicel e muitas outras marcas, com validação automática do IMEI.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16v16H4z"/>
+              <path d="M4 9h16"/>
+              <path d="M9 20V9"/>
+            </svg>
+          </div>
+          <h3>Ferramentas Mi Account</h3>
+          <p>Desative a verificação de Mi Account e corrija situações de re-lock em dispositivos Xiaomi de forma rápida e segura, através de comandos ADB.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <h3>Corrigir Instalação de APK</h3>
+          <p>Resolva problemas de instalação de APK em dispositivos OPPO com um único comando. Chega de "INSTALL_FAILED_VERIFICATION_FAILURE".</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Painel do Usuário</h3>
+          <p>Acesse o painel web para gerenciar créditos, acompanhar suas atividades, ver logs das operações e alterar sua senha com segurança.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section alt" id="how">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Como funciona</span>
+        <h2>Comece em três passos</h2>
+        <p>Sem configuração complicada. Basta baixar, conectar o dispositivo e executar a operação.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-number">1</div>
+          <h3>Baixe a Tool</h3>
+          <p>Clique no botão de download e salve o aplicativo no seu PC com Windows.</p>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-number">2</div>
+          <h3>Conecte o Dispositivo</h3>
+          <p>Ative a depuração USB no dispositivo Android e conecte-o via cabo USB.</p>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-number">3</div>
+          <h3>Execute a Operação</h3>
+          <p>Abra a ferramenta, faça login e escolha o utilitário desejado no menu lateral.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Perguntas</span>
+        <h2>Perguntas frequentes</h2>
+        <p>Saiba tudo sobre a ferramenta, licenciamento e dispositivos compatíveis.</p>
+      </div>
+
+      <div class="faq">
+        <details class="faq-item reveal">
+          <summary>Quais sistemas operacionais são suportados?</summary>
+          <div class="faq-answer">
+            O NETCODES TOOL funciona no Windows 7, 8, 10 e 11 (64 bits). Requer o .NET Framework 4.7.2 ou superior.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Preciso de uma conta para usar a ferramenta?</summary>
+          <div class="faq-answer">
+            Sim. Você precisa criar uma conta gratuita para acessar os utilitários. Basta se registrar com seu endereço de email e já poderá fazer login e começar a usar a ferramenta, além de acessar o painel do usuário.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>O que tem no painel do usuário?</summary>
+          <div class="faq-answer">
+            No painel você pode gerenciar seus créditos, comprar pacotes de recarga, visualizar o histórico completo de atividades, acessar os logs das operações, alterar sua senha e obter ajuda do suporte.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Quais dispositivos são suportados?</summary>
+          <div class="faq-answer">
+            A ferramenta suporta uma ampla variedade de dispositivos Android, incluindo Mobiwire, Hisense, Tecno, Itel, Mobicel, Movitel e outras marcas. Novas marcas são adicionadas regularmente.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Meus dados estão seguros?</summary>
+          <div class="faq-answer">
+            Sim. Toda a autenticação é feita através de infraestrutura segura em nuvem, e a ferramenta nunca armazena informações sensíveis do dispositivo. Suas credenciais são criptografadas durante a transmissão.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>© 2025 NETCODES TOOL. Todos os direitos reservados.</p>
+
+      <div class="footer-social">
+        <a href="#" class="social-btn" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="Telegram">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /landingView -->
+
+<!-- =========================================================
+     LOGIN VIEW
+     ========================================================= -->
+<div class="view" id="loginView">
+
+  <div class="login-split">
+
+    <div class="login-form-side">
+
+      <div class="login-top-bar">
+        <a href="javascript:void(0)" class="back-link" onclick="showLandingView()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Voltar
+        </a>
+      </div>
+
+      <div class="login-form-wrap">
+        <h1 class="login-title" id="authTitle">Bem-vindo de volta</h1>
+        <p class="login-subtitle" id="authSubtitle">Faça login para acessar o seu painel.</p>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+          <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar conta</button>
+        </div>
+
+        <div class="auth-panels">
+          <div class="auth-panel active" id="panelLogin">
+            <div class="auth-field">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email" />
+            </div>
+
+            <div class="auth-field">
+              <label for="loginPassword">Senha</label>
+              <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <div class="auth-status" id="loginStatus"></div>
+
+            <button class="auth-submit" id="loginBtn">Entrar</button>
+          </div>
+
+          <div class="auth-panel" id="panelRegister">
+            <div class="auth-field">
+              <label for="registerEmail">Email</label>
+              <input type="email" id="registerEmail" placeholder="seu@email.com" autocomplete="email" />
+            </div>
+
+            <div class="auth-field">
+              <label for="registerPassword">Senha</label>
+              <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            </div>
+
+            <div class="auth-field">
+              <label for="registerConfirm">Confirmar senha</label>
+              <input type="password" id="registerConfirm" placeholder="Repita a senha" autocomplete="new-password" />
+            </div>
+
+            <div class="auth-status" id="registerStatus"></div>
+
+            <button class="auth-submit" id="registerBtn">Criar conta</button>
+          </div>
+        </div>
+
+        <p class="auth-footnote" id="authFootnote">
+          Não tem uma conta? <a onclick="switchAuthTab('register')">Criar uma agora</a>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="login-brand-side">
+      <div class="brand-side-logo">
+        <div class="logo-mark">NC</div>
+        <span>NETCODES TOOL</span>
+      </div>
+
+      <div class="brand-side-content">
+        <h2>Ferramentas profissionais para técnicos Android.</h2>
+        <p>Acesse o painel para gerenciar créditos, ver o histórico de operações e desbloquear dispositivos em segundos.</p>
+      </div>
+
+      <div class="brand-side-foot">
+        © 2025 NETCODES TOOL
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /loginView -->
+
+<!-- =========================================================
+     MODAL DE DOWNLOAD
+     ========================================================= -->
+<div class="modal-overlay" id="downloadModal" style="position:fixed;inset:0;background:rgba(15,15,20,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.25s;">
+  <div class="modal" style="background:#fff;width:100%;max-width:440px;padding:36px;box-shadow:0 40px 100px rgba(0,0,0,0.3);transform:scale(0.94);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);position:relative;">
+    <button class="modal-close" onclick="closeDownloadModal()" aria-label="Fechar" style="position:absolute;top:14px;right:14px;width:32px;height:32px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-gray);transition:all 0.2s;font-size:18px;">✕</button>
+
+    <div class="modal-icon" style="width:64px;height:64px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;color:var(--purple);margin:0 auto 20px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </div>
+
+    <h3 style="font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--text-dark);text-align:center;margin-bottom:8px;">Baixar NETCODES TOOL</h3>
+    <p style="font-size:14.5px;color:var(--text-gray);text-align:center;line-height:1.55;margin-bottom:24px;">O download começará automaticamente. Verifique se o seu dispositivo Windows atende aos requisitos.</p>
+
+    <div class="download-info" style="background:var(--bg-alt);padding:16px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px;">
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Nome do arquivo</span>
+        <span id="modalFileName" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">NetcodesTool-Setup-1.0.0.exe</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Versão</span>
+        <span id="modalVersion" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">1.0.0</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Tamanho</span>
+        <span id="modalSize" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">119 MB</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Plataforma</span>
+        <span style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">Windows 7 / 8 / 10 / 11</span>
+      </div>
+    </div>
+
+    <div class="download-progress" id="downloadProgress" style="height:6px;background:var(--border);overflow:hidden;margin-top:16px;display:none;">
+      <div class="download-progress-bar" id="downloadProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--purple),#7a55c9);transition:width 0.3s ease;"></div>
+    </div>
+
+    <div class="modal-actions" style="display:flex;gap:12px;margin-top:20px;">
+      <button class="btn btn-secondary" onclick="closeDownloadModal()" style="flex:1;padding:14px 20px;font-size:14.5px;background:#fff;color:var(--text-dark);border:1px solid var(--border);font-weight:600;cursor:pointer;font-family:inherit;">Cancelar</button>
+      <button class="btn btn-primary" id="startDownloadBtn" type="button" style="flex:1;padding:14px 20px;font-size:14.5px;background:var(--purple);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Iniciar download
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG — DOWNLOAD
+   ========================================================= */
+
+// URL de download do instalador no MediaFire
+const MEDIAFIRE_URL = "https://www.mediafire.com/file/l0lnajisjad67un/NetcodesTool-Setup-1.0.0.exe/file";
+
+// Nome do ficheiro que vai aparecer no download
+const INSTALLER_FILENAME = "NetcodesTool-Setup-1.0.0.exe";
+
+// URL base do Supabase (para consultar a tabela app_versions)
+const SUPABASE_URL = "https://avtysbssgfzmvpvdbjjr.supabase.co";
+const SUPABASE_KEY = "sb_publishable__cv5Xmw3KmPEJQVIg_uL8w_ncvFsYxQ";
+
+// Variáveis que vão guardar a URL e nome finais
+let __downloadUrl = MEDIAFIRE_URL;
+let __downloadFileName = INSTALLER_FILENAME;
+
+/* =========================================================
+   BUSCAR URL MAIS RECENTE NO SUPABASE (OPCIONAL)
+   Se a tabela app_versions tiver uma coluna download_url preenchida,
+   o site usa essa URL. Caso contrário, usa o MediaFire.
+   ========================================================= */
+async function fetchLatestDownloadUrl() {
+  try {
+    const url = SUPABASE_URL +
+      "/rest/v1/app_versions?platform=eq.winforms" +
+      "&select=download_url,min_version&limit=1";
+
+    const resp = await fetch(url, {
+      headers: { 'apikey': SUPABASE_KEY }
+    });
+
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+
+    return {
+      url: data[0].download_url || "",
+      version: data[0].min_version || ""
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function initDownloadInfo() {
+  const remote = await fetchLatestDownloadUrl();
+  if (!remote) return;
+
+  if (remote.url) {
+    __downloadUrl = remote.url;
+
+    try {
+      const parts = remote.url.split("/");
+      __downloadFileName = parts[parts.length - 1] || INSTALLER_FILENAME;
+      // Remove sufixo "?dkey=..." ou parâmetros
+      __downloadFileName = __downloadFileName.split("?")[0];
+    } catch {}
+
+    const nameEl = document.getElementById("modalFileName");
+    if (nameEl) nameEl.textContent = __downloadFileName;
+  }
+
+  if (remote.version) {
+    const v1 = document.getElementById("modalVersion");
+    const v2 = document.getElementById("infoVersionLine");
+    if (v1) v1.textContent = remote.version;
+    if (v2) v2.textContent = "Versão " + remote.version;
+  }
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+function showLoginView() {
+  document.getElementById('landingView').classList.remove('active');
+  document.getElementById('loginView').classList.add('active');
+  window.scrollTo(0, 0);
+  document.body.style.overflow = '';
+  setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+}
+
+function showLandingView() {
+  document.getElementById('loginView').classList.remove('active');
+  document.getElementById('landingView').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* =========================================================
+   NAVBAR — SCROLL
+   ========================================================= */
+const navbar = document.getElementById('navbar');
+if (navbar) {
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+}
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) navLinks.classList.remove('active');
+    });
+  });
+}
+
+/* =========================================================
+   REVEAL ON SCROLL
+   ========================================================= */
+const reveals = document.querySelectorAll('.reveal');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, index) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), index * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+reveals.forEach(el => observer.observe(el));
+
+/* =========================================================
+   SMOOTH SCROLL
+   ========================================================= */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href === '#' || href.length < 2) return;
+
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* =========================================================
+   DOWNLOAD MODAL
+   ========================================================= */
+function openDownloadModal() {
+  const el = document.getElementById('downloadModal');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.style.opacity = '1');
+
+  const p = document.getElementById('downloadProgress');
+  const b = document.getElementById('downloadProgressBar');
+  p.style.display = 'none';
+  b.style.width = '0%';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDownloadModal() {
+  const el = document.getElementById('downloadModal');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 250);
+}
+
+document.getElementById('downloadModal').addEventListener('click', (e) => {
+  if (e.target.id === 'downloadModal') closeDownloadModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDownloadModal();
+});
+
+/* =========================================================
+   STATUS HELPERS
+   ========================================================= */
+function setStatus(id, message, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = message || '';
+  el.className = 'auth-status' + (type ? ' ' + type : '');
+}
+
+function resetStatus(id) { setStatus(id, '', ''); }
+
+/* =========================================================
+   AUTH TABS
+   ========================================================= */
+function switchAuthTab(tab) {
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const panelLogin = document.getElementById('panelLogin');
+  const panelRegister = document.getElementById('panelRegister');
+  const title = document.getElementById('authTitle');
+  const subtitle = document.getElementById('authSubtitle');
+  const footnote = document.getElementById('authFootnote');
+
+  if (tab === 'login') {
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    panelLogin.classList.add('active');
+    panelRegister.classList.remove('active');
+    title.textContent = 'Bem-vindo de volta';
+    subtitle.textContent = 'Faça login para acessar o seu painel.';
+    footnote.innerHTML = 'Não tem uma conta? <a onclick="switchAuthTab(\'register\')">Criar uma agora</a>';
+    resetStatus('loginStatus');
+    setTimeout(() => document.getElementById('loginEmail').focus(), 50);
+  } else {
+    tabRegister.classList.add('active');
+    tabLogin.classList.remove('active');
+    panelRegister.classList.add('active');
+    panelLogin.classList.remove('active');
+    title.textContent = 'Crie a sua conta';
+    subtitle.textContent = 'Preencha os campos abaixo para se registrar.';
+    footnote.innerHTML = 'Já tem uma conta? <a onclick="switchAuthTab(\'login\')">Fazer login</a>';
+    resetStatus('registerStatus');
+    setTimeout(() => document.getElementById('registerEmail').focus(), 50);
+  }
+}
+
+/* =========================================================
+   SUPABASE — AUTH
+   ========================================================= */
+async function supabaseSignUp(email, password) {
+  const url = SUPABASE_URL + "/auth/v1/signup";
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const body = await resp.json();
+    if (!resp.ok) {
+      return { ok: false, error: body.msg || body.error_description || body.message || ('HTTP ' + resp.status) };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: 'Sem conexão com a internet. Verifique a sua rede.' };
+  }
+}
+
+async function supabaseSignIn(email, password) {
+  const url = SUPABASE_URL + "/auth/v1/token?grant_type=password";
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const body = await resp.json();
+    if (!resp.ok) {
+      let err = body.error_description || body.msg || body.message || ('HTTP ' + resp.status);
+      if (err.toLowerCase().includes('invalid login credentials')) err = 'Email ou senha incorretos.';
+      else if (err.toLowerCase().includes('email not confirmed')) err = 'Confirme o seu email antes de fazer login.';
+      return { ok: false, error: err };
+    }
+    return { ok: true, email: body.user?.email || email, token: body.access_token, userId: body.user?.id };
+  } catch (err) {
+    return { ok: false, error: 'Sem conexão com a internet. Verifique a sua rede.' };
+  }
+}
+
+/* =========================================================
+   LOGIN HANDLER
+   ========================================================= */
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+
+  resetStatus('loginStatus');
+
+  if (!email || !password) { setStatus('loginStatus', 'Preencha o email e a senha.', 'error'); return; }
+  if (!email.includes('@') || !email.includes('.')) { setStatus('loginStatus', 'Por favor insira um email válido.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  setStatus('loginStatus', 'Verificando conexão...', 'info');
+
+  try {
+    const result = await supabaseSignIn(email, password);
+    if (!result.ok) { setStatus('loginStatus', result.error, 'error'); return; }
+
+    try {
+      localStorage.setItem('nc_logged_in', 'true');
+      localStorage.setItem('nc_user_email', result.email);
+      localStorage.setItem('nc_user_token', result.token || '');
+      localStorage.setItem('nc_user_id', result.userId || '');
+      if (!localStorage.getItem('nc_user_credits')) localStorage.setItem('nc_user_credits', '15');
+    } catch (e) {}
+
+    setStatus('loginStatus', 'Login efetuado. Redirecionando...', 'success');
+    setTimeout(() => { window.location.href = 'admin/dashboard.html'; }, 900);
+
+  } catch (err) {
+    setStatus('loginStatus', 'Erro inesperado: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+});
+
+/* =========================================================
+   REGISTER HANDLER
+   ========================================================= */
+document.getElementById('registerBtn').addEventListener('click', async () => {
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirm = document.getElementById('registerConfirm').value;
+  const btn = document.getElementById('registerBtn');
+
+  resetStatus('registerStatus');
+
+  if (!email || !password) { setStatus('registerStatus', 'Preencha todos os campos.', 'error'); return; }
+  if (!email.includes('@') || !email.includes('.')) { setStatus('registerStatus', 'Por favor insira um email válido.', 'error'); return; }
+  if (password.length < 6) { setStatus('registerStatus', 'A senha deve ter pelo menos 6 caracteres.', 'error'); return; }
+  if (password !== confirm) { setStatus('registerStatus', 'As senhas não coincidem.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Criando...';
+  setStatus('registerStatus', 'Verificando conexão...', 'info');
+
+  try {
+    const signup = await supabaseSignUp(email, password);
+    if (!signup.ok) { setStatus('registerStatus', signup.error, 'error'); return; }
+
+    setStatus('registerStatus', 'Conta criada. Fazendo login...', 'info');
+
+    const login = await supabaseSignIn(email, password);
+    if (login.ok) {
+      try {
+        localStorage.setItem('nc_logged_in', 'true');
+        localStorage.setItem('nc_user_email', login.email);
+        localStorage.setItem('nc_user_token', login.token || '');
+        localStorage.setItem('nc_user_id', login.userId || '');
+        if (!localStorage.getItem('nc_user_credits')) localStorage.setItem('nc_user_credits', '15');
+      } catch (e) {}
+
+      setStatus('registerStatus', 'Conta criada. Redirecionando...', 'success');
+      setTimeout(() => { window.location.href = 'admin/dashboard.html'; }, 900);
+    } else {
+      setStatus('registerStatus', 'Conta criada. Por favor faça login manualmente.', 'success');
+      setTimeout(() => switchAuthTab('login'), 1200);
+    }
+  } catch (err) {
+    setStatus('registerStatus', 'Erro inesperado: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar conta';
+  }
+});
+
+/* =========================================================
+   DOWNLOAD HANDLER — abre o link do MediaFire
+   ========================================================= */
+document.getElementById('startDownloadBtn').addEventListener('click', () => {
+  const progress = document.getElementById('downloadProgress');
+  const bar = document.getElementById('downloadProgressBar');
+
+  progress.style.display = 'block';
+  bar.style.width = '0%';
+
+  let p = 0;
+  const interval = setInterval(() => {
+    p += Math.random() * 18 + 5;
+
+    if (p >= 100) {
+      p = 100;
+      clearInterval(interval);
+
+      // Abre o link de download numa nova aba
+      try {
+        window.open(__downloadUrl, '_blank', 'noopener');
+      } catch (e) {
+        window.location.href = __downloadUrl;
+      }
+
+      setTimeout(() => closeDownloadModal(), 900);
+    }
+
+    bar.style.width = p + '%';
+  }, 180);
+});
+
+/* =========================================================
+   ENTER NOS CAMPOS
+   ========================================================= */
+document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+});
+document.getElementById('registerConfirm').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('registerBtn').click();
+});
+document.getElementById('registerPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('registerConfirm').focus();
+});
+
+/* =========================================================
+   SE JÁ ESTIVER LOGADO → BOTÃO "Entrar" VIRA "Meu painel"
+   ========================================================= */
+(function () {
+  try {
+    const loggedIn = localStorage.getItem('nc_logged_in');
+    const email = localStorage.getItem('nc_user_email');
+
+    if (loggedIn === 'true' && email) {
+      const link = document.querySelector('.nav-signin');
+      if (link) {
+        link.textContent = 'Meu painel';
+        link.onclick = function () {
+          window.location.href = 'admin/dashboard.html';
+        };
+      }
+    }
+  } catch (e) {}
+})();
+
+/* =========================================================
+   INIT
+   ========================================================= */
+initDownloadInfo();
+</script>
+
+</body>
+=======
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NETCODES TOOL — Plataforma profissional para serviços Android</title>
+<meta name="description" content="Ferramenta profissional para diagnóstico e manutenção de dispositivos móveis." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* =========================================================
+   RESET & TOKENS
+   ========================================================= */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --purple: #5230a0;
+  --purple-dark: #3d2278;
+  --purple-light: #f4f0fc;
+  --purple-glow: rgba(82, 48, 160, 0.28);
+  --text-dark: #0f0f14;
+  --text: #232328;
+  --text-gray: #6a6a75;
+  --border: #e6e6ec;
+  --border-soft: #f0f0f4;
+  --bg: #ffffff;
+  --bg-alt: #fafafb;
+  --green: #28a05a;
+  --red: #be3232;
+  --shadow-sm: 0 1px 2px rgba(15, 15, 20, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 15, 20, 0.06);
+  --shadow-lg: 0 20px 60px rgba(15, 15, 20, 0.12);
+  --shadow-purple: 0 20px 60px rgba(82, 48, 160, 0.25);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input { font-family: inherit; }
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+.view { display: none; }
+.view.active { display: block; }
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.navbar.scrolled {
+  border-bottom-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.nav-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  color: var(--text-dark);
+  flex-shrink: 0;
+}
+
+.logo-mark {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 14px;
+  letter-spacing: -0.03em;
+  box-shadow: 0 6px 16px var(--purple-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--text-gray);
+  transition: color 0.2s ease;
+}
+
+.nav-links a:hover { color: var(--text-dark); }
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-signin {
+  padding: 9px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  background: var(--purple);
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 16px var(--purple-glow);
+}
+
+.nav-signin:hover {
+  background: var(--purple-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px var(--purple-glow);
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px;
+}
+
+.menu-toggle span {
+  width: 22px;
+  height: 2px;
+  background: var(--text-dark);
+  transition: 0.2s;
+}
+
+/* =========================================================
+   HERO
+   ========================================================= */
+.hero {
+  padding: 160px 32px 70px;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 0%, rgba(82, 48, 160, 0.08), transparent 60%),
+    var(--bg);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(82, 48, 160, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(82, 48, 160, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black, transparent 80%);
+  pointer-events: none;
+}
+
+.hero-inner {
+  max-width: 880px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.hero h1 {
+  font-size: clamp(32px, 4.8vw, 56px);
+  font-weight: 900;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+  color: var(--text-dark);
+  margin-bottom: 24px;
+}
+
+.hero h1 .accent {
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  margin-top: 6px;
+}
+
+.hero p.lead {
+  font-size: clamp(15.5px, 1.7vw, 18px);
+  color: var(--text-gray);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* =========================================================
+   PREVIEW DA TOOL
+   ========================================================= */
+.preview-section {
+  padding: 0 32px 60px;
+  background: var(--bg);
+}
+
+.preview-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.preview-glow {
+  position: absolute;
+  inset: -40px;
+  background: radial-gradient(ellipse 60% 60% at 50% 50%, var(--purple-glow), transparent 70%);
+  z-index: -1;
+  filter: blur(40px);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.preview-window {
+  background: #fff;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(15, 15, 20, 0.18), 0 8px 24px rgba(15, 15, 20, 0.08);
+  position: relative;
+  aspect-ratio: 16 / 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-body {
+  flex: 1;
+  position: relative;
+  background: #f8f8fa;
+  overflow: hidden;
+}
+
+.preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+
+.preview-placeholder {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: linear-gradient(135deg, #f8f6fd 0%, #f0ecfa 100%);
+  padding: 30px;
+  text-align: center;
+}
+
+.preview-placeholder-icon {
+  width: 64px; height: 64px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--purple);
+  box-shadow: 0 12px 32px rgba(82, 48, 160, 0.15);
+  flex-shrink: 0;
+}
+
+.preview-placeholder-icon svg { width: 30px; height: 30px; }
+
+.preview-placeholder h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.preview-placeholder p {
+  font-size: 13px;
+  color: var(--text-gray);
+  max-width: 340px;
+  line-height: 1.55;
+}
+
+.preview-placeholder code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11.5px;
+  background: #fff;
+  padding: 3px 8px;
+  color: var(--purple);
+  border: 1px solid var(--border);
+}
+
+/* =========================================================
+   DOWNLOAD
+   ========================================================= */
+.download-section {
+  padding: 20px 32px 100px;
+  background: var(--bg);
+}
+
+.download-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.download-btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 40px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 16px 40px var(--purple-glow), inset 0 1px 0 rgba(255,255,255,0.15);
+  letter-spacing: -0.01em;
+}
+
+.download-btn-main:hover {
+  background: var(--purple-dark);
+  transform: translateY(-3px);
+  box-shadow: 0 24px 60px var(--purple-glow);
+}
+
+.download-btn-main svg { width: 22px; height: 22px; }
+
+.download-info-line {
+  font-size: 13.5px;
+  color: var(--text-gray);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.download-info-line span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.download-info-line .dot-sep {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-gray);
+  opacity: 0.4;
+}
+
+/* =========================================================
+   SEÇÕES
+   ========================================================= */
+.section { padding: 100px 32px; }
+.section.alt { background: var(--bg-alt); }
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-head {
+  text-align: center;
+  max-width: 680px;
+  margin: 0 auto 60px;
+}
+
+.section-tag {
+  display: inline-block;
+  padding: 5px 12px;
+  background: var(--purple-light);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--purple);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.section-head h2 {
+  font-size: clamp(28px, 3.8vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin-bottom: 16px;
+}
+
+.section-head p {
+  font-size: 16.5px;
+  color: var(--text-gray);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   FEATURES
+   ========================================================= */
+.features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.feature {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 30px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--purple), #7a55c9);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature:hover {
+  transform: translateY(-4px);
+  border-color: rgba(82, 48, 160, 0.2);
+  box-shadow: var(--shadow-lg);
+}
+
+.feature:hover::before { opacity: 1; }
+
+.feature-icon {
+  width: 50px; height: 50px;
+  background: var(--purple-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  color: var(--purple);
+  transition: all 0.3s;
+}
+
+.feature:hover .feature-icon {
+  background: var(--purple);
+  color: #fff;
+}
+
+.feature-icon svg { width: 23px; height: 23px; }
+
+.feature h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.feature p {
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.65;
+}
+
+/* =========================================================
+   STEPS
+   ========================================================= */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 28px;
+}
+
+.step {
+  text-align: center;
+  padding: 16px;
+}
+
+.step-number {
+  width: 54px; height: 54px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 21px;
+  font-weight: 800;
+  box-shadow: 0 12px 28px var(--purple-glow);
+}
+
+.step h3 {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.step p {
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.6;
+  max-width: 260px;
+  margin: 0 auto;
+}
+
+/* =========================================================
+   FAQ
+   ========================================================= */
+.faq {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.faq-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: all 0.2s;
+}
+
+.faq-item[open] {
+  border-color: rgba(82, 48, 160, 0.25);
+  box-shadow: var(--shadow-md);
+}
+
+.faq-item summary {
+  padding: 20px 24px;
+  font-size: 15.5px;
+  font-weight: 600;
+  color: var(--text-dark);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  transition: color 0.2s;
+}
+
+.faq-item summary::-webkit-details-marker { display: none; }
+
+.faq-item summary::after {
+  content: '+';
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--purple);
+  transition: transform 0.25s;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.faq-item[open] summary::after { transform: rotate(45deg); }
+.faq-item summary:hover { color: var(--purple); }
+
+.faq-answer {
+  padding: 0 24px 22px;
+  font-size: 14.5px;
+  color: var(--text-gray);
+  line-height: 1.7;
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+.footer {
+  background: var(--bg-alt);
+  border-top: 1px solid var(--border);
+  padding: 40px 32px;
+}
+
+.footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.footer-inner p {
+  font-size: 13.5px;
+  color: var(--text-gray);
+}
+
+.footer-social {
+  display: flex;
+  gap: 10px;
+}
+
+.social-btn {
+  width: 38px; height: 38px;
+  background: #fff;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  background: var(--purple);
+  border-color: var(--purple);
+  color: #fff;
+}
+
+.social-btn svg { width: 16px; height: 16px; }
+
+/* =========================================================
+   LOGIN VIEW
+   ========================================================= */
+#loginView {
+  min-height: 100vh;
+  display: none;
+  flex-direction: column;
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+#loginView.active { display: flex; }
+
+.login-split {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100vh;
+}
+
+.login-form-side {
+  display: flex;
+  flex-direction: column;
+  padding: 40px 60px;
+  background: #fff;
+  position: relative;
+}
+
+.login-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-gray);
+  padding: 8px 0;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+
+.back-link:hover { color: var(--purple); }
+.back-link svg { width: 16px; height: 16px; }
+
+.login-form-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  max-width: 400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 0;
+}
+
+.login-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dark);
+  margin-bottom: 10px;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: var(--text-gray);
+  line-height: 1.5;
+  margin-bottom: 36px;
+}
+
+.auth-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-gray);
+  background: transparent;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: all 0.2s;
+  text-align: center;
+}
+
+.auth-tab.active {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+.auth-panel { display: none; }
+.auth-panel.active { display: block; }
+
+.auth-field { margin-bottom: 18px; }
+
+.auth-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+}
+
+.auth-field input {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  font-size: 15px;
+  color: var(--text);
+  background: #fff;
+  transition: border-color 0.2s;
+  outline: none;
+}
+
+.auth-field input:focus { border-color: var(--purple); }
+
+.auth-status {
+  font-size: 13.5px;
+  line-height: 1.5;
+  min-height: 20px;
+  margin-bottom: 8px;
+  text-align: left;
+}
+
+.auth-status.error { color: var(--red); }
+.auth-status.success { color: var(--purple); }
+.auth-status.info { color: var(--text-gray); }
+
+.auth-submit {
+  width: 100%;
+  padding: 15px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+  margin-top: 8px;
+  letter-spacing: -0.01em;
+}
+
+.auth-submit:hover { background: var(--purple-dark); }
+.auth-submit:disabled { opacity: 0.7; cursor: not-allowed; }
+
+.auth-footnote {
+  margin-top: 24px;
+  font-size: 13.5px;
+  color: var(--text-gray);
+  text-align: center;
+}
+
+.auth-footnote a {
+  color: var(--purple);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-footnote a:hover { text-decoration: underline; }
+
+.login-brand-side {
+  background: linear-gradient(135deg, #5230a0 0%, #3d2278 100%);
+  color: #fff;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-brand-side::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 400px; height: 400px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.login-brand-side::after {
+  content: '';
+  position: absolute;
+  bottom: -150px; left: -100px;
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.brand-side-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.brand-side-logo .logo-mark {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+}
+
+.brand-side-content {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+}
+
+.brand-side-content h2 {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.brand-side-content p {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.65;
+}
+
+.brand-side-foot {
+  position: relative;
+  z-index: 1;
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0; right: 0;
+    background: #fff;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+  }
+
+  .nav-links.active { display: flex; }
+  .nav-links li { border-bottom: 1px solid var(--border); }
+  .nav-links li:last-child { border-bottom: none; }
+
+  .nav-links a { display: block; padding: 14px 12px; }
+
+  .nav-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+    padding: 12px 0 4px;
+    border-top: 1px solid var(--border);
+  }
+
+  .nav-signin { text-align: center; }
+
+  .menu-toggle { display: flex; }
+
+  .hero { padding: 130px 24px 60px; }
+  .section { padding: 70px 24px; }
+  .preview-section { padding: 0 24px 40px; }
+  .download-section { padding: 10px 24px 70px; }
+
+  .preview-window {
+    aspect-ratio: 4 / 3;
+  }
+
+  .preview-placeholder { padding: 20px; gap: 12px; }
+  .preview-placeholder-icon { width: 52px; height: 52px; }
+  .preview-placeholder-icon svg { width: 24px; height: 24px; }
+  .preview-placeholder h4 { font-size: 14.5px; }
+  .preview-placeholder p { font-size: 12.5px; max-width: 280px; }
+
+  .download-btn-main {
+    width: 100%;
+    justify-content: center;
+    padding: 18px 24px;
+    font-size: 16px;
+  }
+
+  .footer-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .login-split { grid-template-columns: 1fr; }
+  .login-brand-side { display: none; }
+  .login-form-side { padding: 32px 24px; }
+}
+
+@media (max-width: 560px) {
+  .nav-inner { padding: 14px 20px; }
+  .hero { padding: 110px 20px 50px; }
+  .section { padding: 60px 20px; }
+  .download-section { padding: 10px 20px 60px; }
+
+  .preview-window { aspect-ratio: 1 / 1; }
+
+  .download-info-line {
+    font-size: 12.5px;
+    gap: 10px;
+  }
+
+  .download-info-line .dot-sep { display: none; }
+
+  .login-form-side { padding: 24px 20px; }
+  .login-title { font-size: 28px; }
+}
+
+/* =========================================================
+   ANIMAÇÕES
+   ========================================================= */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.reveal { opacity: 0; }
+.reveal.visible { animation: fadeUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+
+#loginView.active .login-form-wrap {
+  animation: fadeUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
+</head>
+<body>
+
+<!-- =========================================================
+     LANDING VIEW
+     ========================================================= -->
+<div class="view active" id="landingView">
+
+  <nav class="navbar" id="navbar">
+    <div class="nav-inner">
+      <a href="#" class="logo">
+        <div class="logo-mark">NC</div>
+        <span>NETCODES TOOL</span>
+      </a>
+
+      <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#features">Recursos</a></li>
+        <li><a href="#how">Como funciona</a></li>
+        <li><a href="#faq">Perguntas</a></li>
+        <li class="nav-actions">
+          <a href="javascript:void(0)" class="nav-signin" onclick="showLoginView()">Entrar</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-inner">
+      <h1 class="reveal">
+        Ferramenta profissional para diagnóstico
+        <span class="accent">e manutenção de dispositivos móveis</span>
+      </h1>
+
+      <p class="lead reveal">
+        Tenha em um só lugar as principais ferramentas para assistência técnica Android.
+        Identifique dispositivos, consulte informações de hardware e software, trabalhe com ADB,
+        execute operações de manutenção e acesse recursos avançados para diferentes marcas e plataformas.
+      </p>
+    </div>
+  </section>
+
+  <!-- PREVIEW -->
+  <section class="preview-section">
+    <div class="preview-inner reveal">
+      <div class="preview-glow"></div>
+      <div class="preview-window">
+        <div class="preview-body">
+          <img src="imagem/netcodes.png"
+               alt="Interface do NETCODES TOOL"
+               class="preview-image"
+               onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+
+          <div class="preview-placeholder">
+            <div class="preview-placeholder-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="16" rx="3"/>
+                <path d="M3 9h18"/>
+                <path d="M8 14l3 3 5-5"/>
+              </svg>
+            </div>
+            <h4>Interface da ferramenta</h4>
+            <p>Adicione uma captura de tela em <code>imagem/netcodes.png</code> para exibi-la aqui.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DOWNLOAD -->
+  <section class="download-section" id="download">
+    <div class="download-inner reveal">
+      <button class="download-btn-main" onclick="openDownloadModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Baixar NETCODES TOOL
+      </button>
+
+      <div class="download-info-line">
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="16" rx="3"/>
+            <path d="M3 9h18"/>
+          </svg>
+          Windows 7, 8, 10, 11
+        </span>
+        <span class="dot-sep"></span>
+        <span id="infoVersionLine">Versão 1.0.0</span>
+        <span class="dot-sep"></span>
+        <span id="infoSizeLine">119 MB</span>
+        <span class="dot-sep"></span>
+        <span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Verificado e seguro
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- RECURSOS -->
+  <section class="section" id="features">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Recursos</span>
+        <h2>Tudo o que você precisa em uma única ferramenta</h2>
+        <p>Feita para técnicos profissionais de celular — rápida, confiável e sempre atualizada.</p>
+      </div>
+
+      <div class="features">
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2a3 3 0 0 0-3 3v14a3 3 0 0 0 3 3h0a3 3 0 0 0 3-3V5a3 3 0 0 0-3-3z"/>
+              <line x1="9" y1="8" x2="15" y2="8"/>
+              <line x1="9" y1="12" x2="15" y2="12"/>
+            </svg>
+          </div>
+          <h3>Ler Informações</h3>
+          <p>Extraia dados técnicos completos de qualquer dispositivo Android conectado — modelo, marca, versão do Android, CPU, memória, bateria e muito mais.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+            </svg>
+          </div>
+          <h3>Bypass FRP</h3>
+          <p>Remova a proteção FRP (Factory Reset Protection) do Google em dispositivos Android compatíveis. Funciona via ADB, sem abrir o aparelho.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <h3>Gerador de Código IMEI</h3>
+          <p>Gere códigos de desbloqueio para Mobiwire, Hisense, Tecno, Itel, Mobicel e muitas outras marcas, com validação automática do IMEI.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16v16H4z"/>
+              <path d="M4 9h16"/>
+              <path d="M9 20V9"/>
+            </svg>
+          </div>
+          <h3>Ferramentas Mi Account</h3>
+          <p>Desative a verificação de Mi Account e corrija situações de re-lock em dispositivos Xiaomi de forma rápida e segura, através de comandos ADB.</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+            </svg>
+          </div>
+          <h3>Corrigir Instalação de APK</h3>
+          <p>Resolva problemas de instalação de APK em dispositivos OPPO com um único comando. Chega de "INSTALL_FAILED_VERIFICATION_FAILURE".</p>
+        </div>
+
+        <div class="feature reveal">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3>Painel do Usuário</h3>
+          <p>Acesse o painel web para gerenciar créditos, acompanhar suas atividades, ver logs das operações e alterar sua senha com segurança.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="section alt" id="how">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Como funciona</span>
+        <h2>Comece em três passos</h2>
+        <p>Sem configuração complicada. Basta baixar, conectar o dispositivo e executar a operação.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step-number">1</div>
+          <h3>Baixe a Tool</h3>
+          <p>Clique no botão de download e salve o aplicativo no seu PC com Windows.</p>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-number">2</div>
+          <h3>Conecte o Dispositivo</h3>
+          <p>Ative a depuração USB no dispositivo Android e conecte-o via cabo USB.</p>
+        </div>
+
+        <div class="step reveal">
+          <div class="step-number">3</div>
+          <h3>Execute a Operação</h3>
+          <p>Abra a ferramenta, faça login e escolha o utilitário desejado no menu lateral.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq">
+    <div class="section-inner">
+      <div class="section-head reveal">
+        <span class="section-tag">Perguntas</span>
+        <h2>Perguntas frequentes</h2>
+        <p>Saiba tudo sobre a ferramenta, licenciamento e dispositivos compatíveis.</p>
+      </div>
+
+      <div class="faq">
+        <details class="faq-item reveal">
+          <summary>Quais sistemas operacionais são suportados?</summary>
+          <div class="faq-answer">
+            O NETCODES TOOL funciona no Windows 7, 8, 10 e 11 (64 bits). Requer o .NET Framework 4.7.2 ou superior.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Preciso de uma conta para usar a ferramenta?</summary>
+          <div class="faq-answer">
+            Sim. Você precisa criar uma conta gratuita para acessar os utilitários. Basta se registrar com seu endereço de email e já poderá fazer login e começar a usar a ferramenta, além de acessar o painel do usuário.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>O que tem no painel do usuário?</summary>
+          <div class="faq-answer">
+            No painel você pode gerenciar seus créditos, comprar pacotes de recarga, visualizar o histórico completo de atividades, acessar os logs das operações, alterar sua senha e obter ajuda do suporte.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Quais dispositivos são suportados?</summary>
+          <div class="faq-answer">
+            A ferramenta suporta uma ampla variedade de dispositivos Android, incluindo Mobiwire, Hisense, Tecno, Itel, Mobicel, Movitel e outras marcas. Novas marcas são adicionadas regularmente.
+          </div>
+        </details>
+
+        <details class="faq-item reveal">
+          <summary>Meus dados estão seguros?</summary>
+          <div class="faq-answer">
+            Sim. Toda a autenticação é feita através de infraestrutura segura em nuvem, e a ferramenta nunca armazena informações sensíveis do dispositivo. Suas credenciais são criptografadas durante a transmissão.
+          </div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>© 2025 NETCODES TOOL. Todos os direitos reservados.</p>
+
+      <div class="footer-social">
+        <a href="#" class="social-btn" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+          </svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+        <a href="#" class="social-btn" aria-label="Telegram">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+</div><!-- /landingView -->
+
+<!-- =========================================================
+     LOGIN VIEW
+     ========================================================= -->
+<div class="view" id="loginView">
+
+  <div class="login-split">
+
+    <div class="login-form-side">
+
+      <div class="login-top-bar">
+        <a href="javascript:void(0)" class="back-link" onclick="showLandingView()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/>
+            <polyline points="12 19 5 12 12 5"/>
+          </svg>
+          Voltar
+        </a>
+      </div>
+
+      <div class="login-form-wrap">
+        <h1 class="login-title" id="authTitle">Bem-vindo de volta</h1>
+        <p class="login-subtitle" id="authSubtitle">Faça login para acessar o seu painel.</p>
+
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Entrar</button>
+          <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Criar conta</button>
+        </div>
+
+        <div class="auth-panels">
+          <div class="auth-panel active" id="panelLogin">
+            <div class="auth-field">
+              <label for="loginEmail">Email</label>
+              <input type="email" id="loginEmail" placeholder="seu@email.com" autocomplete="email" />
+            </div>
+
+            <div class="auth-field">
+              <label for="loginPassword">Senha</label>
+              <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <div class="auth-status" id="loginStatus"></div>
+
+            <button class="auth-submit" id="loginBtn">Entrar</button>
+          </div>
+
+          <div class="auth-panel" id="panelRegister">
+            <div class="auth-field">
+              <label for="registerEmail">Email</label>
+              <input type="email" id="registerEmail" placeholder="seu@email.com" autocomplete="email" />
+            </div>
+
+            <div class="auth-field">
+              <label for="registerPassword">Senha</label>
+              <input type="password" id="registerPassword" placeholder="Mínimo 6 caracteres" autocomplete="new-password" />
+            </div>
+
+            <div class="auth-field">
+              <label for="registerConfirm">Confirmar senha</label>
+              <input type="password" id="registerConfirm" placeholder="Repita a senha" autocomplete="new-password" />
+            </div>
+
+            <div class="auth-status" id="registerStatus"></div>
+
+            <button class="auth-submit" id="registerBtn">Criar conta</button>
+          </div>
+        </div>
+
+        <p class="auth-footnote" id="authFootnote">
+          Não tem uma conta? <a onclick="switchAuthTab('register')">Criar uma agora</a>
+        </p>
+      </div>
+
+    </div>
+
+    <div class="login-brand-side">
+      <div class="brand-side-logo">
+        <div class="logo-mark">NC</div>
+        <span>NETCODES TOOL</span>
+      </div>
+
+      <div class="brand-side-content">
+        <h2>Ferramentas profissionais para técnicos Android.</h2>
+        <p>Acesse o painel para gerenciar créditos, ver o histórico de operações e desbloquear dispositivos em segundos.</p>
+      </div>
+
+      <div class="brand-side-foot">
+        © 2025 NETCODES TOOL
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- /loginView -->
+
+<!-- =========================================================
+     MODAL DE DOWNLOAD
+     ========================================================= -->
+<div class="modal-overlay" id="downloadModal" style="position:fixed;inset:0;background:rgba(15,15,20,0.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;opacity:0;transition:opacity 0.25s;">
+  <div class="modal" style="background:#fff;width:100%;max-width:440px;padding:36px;box-shadow:0 40px 100px rgba(0,0,0,0.3);transform:scale(0.94);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1);position:relative;">
+    <button class="modal-close" onclick="closeDownloadModal()" aria-label="Fechar" style="position:absolute;top:14px;right:14px;width:32px;height:32px;background:transparent;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text-gray);transition:all 0.2s;font-size:18px;">✕</button>
+
+    <div class="modal-icon" style="width:64px;height:64px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;color:var(--purple);margin:0 auto 20px;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+        <polyline points="7 10 12 15 17 10"/>
+        <line x1="12" y1="15" x2="12" y2="3"/>
+      </svg>
+    </div>
+
+    <h3 style="font-size:22px;font-weight:800;letter-spacing:-0.02em;color:var(--text-dark);text-align:center;margin-bottom:8px;">Baixar NETCODES TOOL</h3>
+    <p style="font-size:14.5px;color:var(--text-gray);text-align:center;line-height:1.55;margin-bottom:24px;">O download começará automaticamente. Verifique se o seu dispositivo Windows atende aos requisitos.</p>
+
+    <div class="download-info" style="background:var(--bg-alt);padding:16px;margin-bottom:20px;display:flex;flex-direction:column;gap:10px;">
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Nome do arquivo</span>
+        <span id="modalFileName" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">NetcodesTool-Setup-1.0.0.exe</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Versão</span>
+        <span id="modalVersion" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">1.0.0</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Tamanho</span>
+        <span id="modalSize" style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">119 MB</span>
+      </div>
+      <div class="info-row" style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+        <span style="color:var(--text-gray);">Plataforma</span>
+        <span style="color:var(--text-dark);font-weight:600;font-family:'JetBrains Mono',monospace;font-size:12.5px;">Windows 7 / 8 / 10 / 11</span>
+      </div>
+    </div>
+
+    <div class="download-progress" id="downloadProgress" style="height:6px;background:var(--border);overflow:hidden;margin-top:16px;display:none;">
+      <div class="download-progress-bar" id="downloadProgressBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--purple),#7a55c9);transition:width 0.3s ease;"></div>
+    </div>
+
+    <div class="modal-actions" style="display:flex;gap:12px;margin-top:20px;">
+      <button class="btn btn-secondary" onclick="closeDownloadModal()" style="flex:1;padding:14px 20px;font-size:14.5px;background:#fff;color:var(--text-dark);border:1px solid var(--border);font-weight:600;cursor:pointer;font-family:inherit;">Cancelar</button>
+      <button class="btn btn-primary" id="startDownloadBtn" type="button" style="flex:1;padding:14px 20px;font-size:14.5px;background:var(--purple);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:10px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px;">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Iniciar download
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   CONFIG — DOWNLOAD
+   ========================================================= */
+
+// URL de download do instalador no MediaFire
+const MEDIAFIRE_URL = "https://www.mediafire.com/file/l0lnajisjad67un/NetcodesTool-Setup-1.0.0.exe/file";
+
+// Nome do ficheiro que vai aparecer no download
+const INSTALLER_FILENAME = "NetcodesTool-Setup-1.0.0.exe";
+
+// URL base do Supabase (para consultar a tabela app_versions)
+const SUPABASE_URL = "https://avtysbssgfzmvpvdbjjr.supabase.co";
+const SUPABASE_KEY = "sb_publishable__cv5Xmw3KmPEJQVIg_uL8w_ncvFsYxQ";
+
+// Variáveis que vão guardar a URL e nome finais
+let __downloadUrl = MEDIAFIRE_URL;
+let __downloadFileName = INSTALLER_FILENAME;
+
+/* =========================================================
+   BUSCAR URL MAIS RECENTE NO SUPABASE (OPCIONAL)
+   Se a tabela app_versions tiver uma coluna download_url preenchida,
+   o site usa essa URL. Caso contrário, usa o MediaFire.
+   ========================================================= */
+async function fetchLatestDownloadUrl() {
+  try {
+    const url = SUPABASE_URL +
+      "/rest/v1/app_versions?platform=eq.winforms" +
+      "&select=download_url,min_version&limit=1";
+
+    const resp = await fetch(url, {
+      headers: { 'apikey': SUPABASE_KEY }
+    });
+
+    if (!resp.ok) return null;
+
+    const data = await resp.json();
+    if (!Array.isArray(data) || data.length === 0) return null;
+
+    return {
+      url: data[0].download_url || "",
+      version: data[0].min_version || ""
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function initDownloadInfo() {
+  const remote = await fetchLatestDownloadUrl();
+  if (!remote) return;
+
+  if (remote.url) {
+    __downloadUrl = remote.url;
+
+    try {
+      const parts = remote.url.split("/");
+      __downloadFileName = parts[parts.length - 1] || INSTALLER_FILENAME;
+      // Remove sufixo "?dkey=..." ou parâmetros
+      __downloadFileName = __downloadFileName.split("?")[0];
+    } catch {}
+
+    const nameEl = document.getElementById("modalFileName");
+    if (nameEl) nameEl.textContent = __downloadFileName;
+  }
+
+  if (remote.version) {
+    const v1 = document.getElementById("modalVersion");
+    const v2 = document.getElementById("infoVersionLine");
+    if (v1) v1.textContent = remote.version;
+    if (v2) v2.textContent = "Versão " + remote.version;
+  }
+}
+
+/* =========================================================
+   VIEWS
+   ========================================================= */
+function showLoginView() {
+  document.getElementById('landingView').classList.remove('active');
+  document.getElementById('loginView').classList.add('active');
+  window.scrollTo(0, 0);
+  document.body.style.overflow = '';
+  setTimeout(() => document.getElementById('loginEmail').focus(), 100);
+}
+
+function showLandingView() {
+  document.getElementById('loginView').classList.remove('active');
+  document.getElementById('landingView').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+/* =========================================================
+   NAVBAR — SCROLL
+   ========================================================= */
+const navbar = document.getElementById('navbar');
+if (navbar) {
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+}
+
+/* =========================================================
+   MOBILE MENU
+   ========================================================= */
+const menuToggle = document.getElementById('menuToggle');
+const navLinks = document.getElementById('navLinks');
+
+if (menuToggle && navLinks) {
+  menuToggle.addEventListener('click', () => {
+    navLinks.classList.toggle('active');
+  });
+
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => {
+      if (window.innerWidth <= 900) navLinks.classList.remove('active');
+    });
+  });
+}
+
+/* =========================================================
+   REVEAL ON SCROLL
+   ========================================================= */
+const reveals = document.querySelectorAll('.reveal');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((entry, index) => {
+    if (entry.isIntersecting) {
+      setTimeout(() => entry.target.classList.add('visible'), index * 60);
+      observer.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+reveals.forEach(el => observer.observe(el));
+
+/* =========================================================
+   SMOOTH SCROLL
+   ========================================================= */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    const href = this.getAttribute('href');
+    if (href === '#' || href.length < 2) return;
+
+    const target = document.querySelector(href);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+
+/* =========================================================
+   DOWNLOAD MODAL
+   ========================================================= */
+function openDownloadModal() {
+  const el = document.getElementById('downloadModal');
+  el.style.display = 'flex';
+  requestAnimationFrame(() => el.style.opacity = '1');
+
+  const p = document.getElementById('downloadProgress');
+  const b = document.getElementById('downloadProgressBar');
+  p.style.display = 'none';
+  b.style.width = '0%';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDownloadModal() {
+  const el = document.getElementById('downloadModal');
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.style.display = 'none';
+    document.body.style.overflow = '';
+  }, 250);
+}
+
+document.getElementById('downloadModal').addEventListener('click', (e) => {
+  if (e.target.id === 'downloadModal') closeDownloadModal();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeDownloadModal();
+});
+
+/* =========================================================
+   STATUS HELPERS
+   ========================================================= */
+function setStatus(id, message, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = message || '';
+  el.className = 'auth-status' + (type ? ' ' + type : '');
+}
+
+function resetStatus(id) { setStatus(id, '', ''); }
+
+/* =========================================================
+   AUTH TABS
+   ========================================================= */
+function switchAuthTab(tab) {
+  const tabLogin = document.getElementById('tabLogin');
+  const tabRegister = document.getElementById('tabRegister');
+  const panelLogin = document.getElementById('panelLogin');
+  const panelRegister = document.getElementById('panelRegister');
+  const title = document.getElementById('authTitle');
+  const subtitle = document.getElementById('authSubtitle');
+  const footnote = document.getElementById('authFootnote');
+
+  if (tab === 'login') {
+    tabLogin.classList.add('active');
+    tabRegister.classList.remove('active');
+    panelLogin.classList.add('active');
+    panelRegister.classList.remove('active');
+    title.textContent = 'Bem-vindo de volta';
+    subtitle.textContent = 'Faça login para acessar o seu painel.';
+    footnote.innerHTML = 'Não tem uma conta? <a onclick="switchAuthTab(\'register\')">Criar uma agora</a>';
+    resetStatus('loginStatus');
+    setTimeout(() => document.getElementById('loginEmail').focus(), 50);
+  } else {
+    tabRegister.classList.add('active');
+    tabLogin.classList.remove('active');
+    panelRegister.classList.add('active');
+    panelLogin.classList.remove('active');
+    title.textContent = 'Crie a sua conta';
+    subtitle.textContent = 'Preencha os campos abaixo para se registrar.';
+    footnote.innerHTML = 'Já tem uma conta? <a onclick="switchAuthTab(\'login\')">Fazer login</a>';
+    resetStatus('registerStatus');
+    setTimeout(() => document.getElementById('registerEmail').focus(), 50);
+  }
+}
+
+/* =========================================================
+   SUPABASE — AUTH
+   ========================================================= */
+async function supabaseSignUp(email, password) {
+  const url = SUPABASE_URL + "/auth/v1/signup";
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const body = await resp.json();
+    if (!resp.ok) {
+      return { ok: false, error: body.msg || body.error_description || body.message || ('HTTP ' + resp.status) };
+    }
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: 'Sem conexão com a internet. Verifique a sua rede.' };
+  }
+}
+
+async function supabaseSignIn(email, password) {
+  const url = SUPABASE_URL + "/auth/v1/token?grant_type=password";
+  try {
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_KEY },
+      body: JSON.stringify({ email, password })
+    });
+    const body = await resp.json();
+    if (!resp.ok) {
+      let err = body.error_description || body.msg || body.message || ('HTTP ' + resp.status);
+      if (err.toLowerCase().includes('invalid login credentials')) err = 'Email ou senha incorretos.';
+      else if (err.toLowerCase().includes('email not confirmed')) err = 'Confirme o seu email antes de fazer login.';
+      return { ok: false, error: err };
+    }
+    return { ok: true, email: body.user?.email || email, token: body.access_token, userId: body.user?.id };
+  } catch (err) {
+    return { ok: false, error: 'Sem conexão com a internet. Verifique a sua rede.' };
+  }
+}
+
+/* =========================================================
+   LOGIN HANDLER
+   ========================================================= */
+document.getElementById('loginBtn').addEventListener('click', async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const btn = document.getElementById('loginBtn');
+
+  resetStatus('loginStatus');
+
+  if (!email || !password) { setStatus('loginStatus', 'Preencha o email e a senha.', 'error'); return; }
+  if (!email.includes('@') || !email.includes('.')) { setStatus('loginStatus', 'Por favor insira um email válido.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+  setStatus('loginStatus', 'Verificando conexão...', 'info');
+
+  try {
+    const result = await supabaseSignIn(email, password);
+    if (!result.ok) { setStatus('loginStatus', result.error, 'error'); return; }
+
+    try {
+      localStorage.setItem('nc_logged_in', 'true');
+      localStorage.setItem('nc_user_email', result.email);
+      localStorage.setItem('nc_user_token', result.token || '');
+      localStorage.setItem('nc_user_id', result.userId || '');
+      if (!localStorage.getItem('nc_user_credits')) localStorage.setItem('nc_user_credits', '15');
+    } catch (e) {}
+
+    setStatus('loginStatus', 'Login efetuado. Redirecionando...', 'success');
+    setTimeout(() => { window.location.href = 'admin/dashboard.html'; }, 900);
+
+  } catch (err) {
+    setStatus('loginStatus', 'Erro inesperado: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+});
+
+/* =========================================================
+   REGISTER HANDLER
+   ========================================================= */
+document.getElementById('registerBtn').addEventListener('click', async () => {
+  const email = document.getElementById('registerEmail').value.trim();
+  const password = document.getElementById('registerPassword').value;
+  const confirm = document.getElementById('registerConfirm').value;
+  const btn = document.getElementById('registerBtn');
+
+  resetStatus('registerStatus');
+
+  if (!email || !password) { setStatus('registerStatus', 'Preencha todos os campos.', 'error'); return; }
+  if (!email.includes('@') || !email.includes('.')) { setStatus('registerStatus', 'Por favor insira um email válido.', 'error'); return; }
+  if (password.length < 6) { setStatus('registerStatus', 'A senha deve ter pelo menos 6 caracteres.', 'error'); return; }
+  if (password !== confirm) { setStatus('registerStatus', 'As senhas não coincidem.', 'error'); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Criando...';
+  setStatus('registerStatus', 'Verificando conexão...', 'info');
+
+  try {
+    const signup = await supabaseSignUp(email, password);
+    if (!signup.ok) { setStatus('registerStatus', signup.error, 'error'); return; }
+
+    setStatus('registerStatus', 'Conta criada. Fazendo login...', 'info');
+
+    const login = await supabaseSignIn(email, password);
+    if (login.ok) {
+      try {
+        localStorage.setItem('nc_logged_in', 'true');
+        localStorage.setItem('nc_user_email', login.email);
+        localStorage.setItem('nc_user_token', login.token || '');
+        localStorage.setItem('nc_user_id', login.userId || '');
+        if (!localStorage.getItem('nc_user_credits')) localStorage.setItem('nc_user_credits', '15');
+      } catch (e) {}
+
+      setStatus('registerStatus', 'Conta criada. Redirecionando...', 'success');
+      setTimeout(() => { window.location.href = 'admin/dashboard.html'; }, 900);
+    } else {
+      setStatus('registerStatus', 'Conta criada. Por favor faça login manualmente.', 'success');
+      setTimeout(() => switchAuthTab('login'), 1200);
+    }
+  } catch (err) {
+    setStatus('registerStatus', 'Erro inesperado: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Criar conta';
+  }
+});
+
+/* =========================================================
+   DOWNLOAD HANDLER — abre o link do MediaFire
+   ========================================================= */
+document.getElementById('startDownloadBtn').addEventListener('click', () => {
+  const progress = document.getElementById('downloadProgress');
+  const bar = document.getElementById('downloadProgressBar');
+
+  progress.style.display = 'block';
+  bar.style.width = '0%';
+
+  let p = 0;
+  const interval = setInterval(() => {
+    p += Math.random() * 18 + 5;
+
+    if (p >= 100) {
+      p = 100;
+      clearInterval(interval);
+
+      // Abre o link de download numa nova aba
+      try {
+        window.open(__downloadUrl, '_blank', 'noopener');
+      } catch (e) {
+        window.location.href = __downloadUrl;
+      }
+
+      setTimeout(() => closeDownloadModal(), 900);
+    }
+
+    bar.style.width = p + '%';
+  }, 180);
+});
+
+/* =========================================================
+   ENTER NOS CAMPOS
+   ========================================================= */
+document.getElementById('loginPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+document.getElementById('loginEmail').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('loginPassword').focus();
+});
+document.getElementById('registerConfirm').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('registerBtn').click();
+});
+document.getElementById('registerPassword').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') document.getElementById('registerConfirm').focus();
+});
+
+/* =========================================================
+   SE JÁ ESTIVER LOGADO → BOTÃO "Entrar" VIRA "Meu painel"
+   ========================================================= */
+(function () {
+  try {
+    const loggedIn = localStorage.getItem('nc_logged_in');
+    const email = localStorage.getItem('nc_user_email');
+
+    if (loggedIn === 'true' && email) {
+      const link = document.querySelector('.nav-signin');
+      if (link) {
+        link.textContent = 'Meu painel';
+        link.onclick = function () {
+          window.location.href = 'admin/dashboard.html';
+        };
+      }
+    }
+  } catch (e) {}
+})();
+
+/* =========================================================
+   INIT
+   ========================================================= */
+initDownloadInfo();
+</script>
+
+</body>
+>>>>>>> 66002541f0047f0d5d59f7fb3beb1cc094fafbaf
+</html>

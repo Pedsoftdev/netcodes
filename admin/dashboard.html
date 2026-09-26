@@ -1,0 +1,3350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Painel — NET CODES TOOL</title>
+
+<script>
+  (function () {
+    const loggedIn = localStorage.getItem('nc_logged_in');
+    const email = localStorage.getItem('nc_user_email');
+    if (loggedIn !== 'true' || !email) {
+      window.location.replace('../index.html');
+    }
+  })();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   RESET
+   ========================================================= */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --purple: #5230a0;
+  --purple-dark: #3d2278;
+  --purple-light: #f4f0fc;
+  --purple-glow: rgba(82, 48, 160, 0.25);
+  --text-dark: #0f0f14;
+  --text: #232328;
+  --text-gray: #6a6a75;
+  --text-light: #9a9aa5;
+  --border: #e4e4e9;
+  --bg: #ffffff;
+  --bg-alt: #fafafb;
+  --bg-sidebar: #ffffff;
+  --green: #28a05a;
+  --green-bg: rgba(40, 160, 90, 0.1);
+  --red: #be3232;
+  --red-bg: rgba(190, 50, 50, 0.1);
+  --orange: #d98514;
+  --orange-bg: rgba(217, 133, 20, 0.1);
+  --blue: #0e6eb4;
+  --blue-bg: rgba(14, 110, 180, 0.1);
+  --shadow-sm: 0 1px 2px rgba(15, 15, 20, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 15, 20, 0.06);
+  --shadow-lg: 0 20px 60px rgba(15, 15, 20, 0.12);
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text);
+  background: var(--bg-alt);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+input, textarea, select { font-family: inherit; }
+
+/* =========================================================
+   LAYOUT
+   ========================================================= */
+.app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+/* =========================================================
+   SIDEBAR
+   ========================================================= */
+.sidebar {
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+.sidebar-logo {
+  padding: 24px 22px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, #623eb4 0%, #46288c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: -0.03em;
+  box-shadow: 0 6px 16px var(--purple-glow), inset 0 1px 0 rgba(255,255,255,0.25);
+  position: relative;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.logo-mark::before {
+  content: '';
+  position: absolute;
+  top: -20px; left: -20px;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.logo-text { display: flex; flex-direction: column; }
+
+.logo-title {
+  font-weight: 800;
+  font-size: 15px;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.nav-section { padding: 18px 12px 0; }
+
+.nav-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0 12px 8px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--text-gray);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  position: relative;
+}
+
+.nav-item:hover { background: var(--bg-alt); color: var(--text-dark); }
+
+.nav-item.active {
+  background: var(--purple-light);
+  color: var(--purple);
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 20%;
+  bottom: 20%;
+  width: 3px;
+  background: var(--purple);
+}
+
+.nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  padding: 2px 8px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.nav-badge.green { background: var(--green); }
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-top: 1px solid var(--border);
+}
+
+.user-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--bg-alt);
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-bottom: 8px;
+}
+
+.user-card:hover { background: var(--purple-light); }
+
+.user-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #623eb4, #46288c);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 14px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.user-info { flex: 1; min-width: 0; }
+
+.user-name {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role { font-size: 11.5px; color: var(--text-light); font-weight: 500; }
+
+.logout-btn {
+  width: 100%;
+  padding: 9px 12px;
+  color: var(--red);
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background 0.15s;
+}
+
+.logout-btn:hover { background: var(--red-bg); }
+.logout-btn svg { width: 16px; height: 16px; }
+
+/* =========================================================
+   SIDEBAR OVERLAY (mobile)
+   ========================================================= */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 20, 0.5);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 150;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.sidebar-overlay.visible {
+  display: block;
+  opacity: 1;
+}
+
+/* =========================================================
+   MAIN
+   ========================================================= */
+.main { display: flex; flex-direction: column; min-height: 100vh; min-width: 0; }
+
+.topbar {
+  height: 68px;
+  padding: 0 32px;
+  border-bottom: 1px solid var(--border);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.topbar-left { display: flex; align-items: center; gap: 16px; min-width: 0; flex: 1; }
+
+.menu-toggle-mobile {
+  display: none;
+  width: 40px;
+  height: 40px;
+  background: var(--bg-alt);
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dark);
+  flex-shrink: 0;
+}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-gray);
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.topbar-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.icon-btn {
+  width: 40px; height: 40px;
+  background: var(--bg-alt);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  position: relative;
+  transition: all 0.15s;
+}
+
+.icon-btn:hover { background: var(--purple-light); color: var(--purple); }
+.icon-btn svg { width: 18px; height: 18px; }
+
+.content { padding: 32px; flex: 1; min-width: 0; }
+
+.content-page { display: none; }
+.content-page.active { display: block; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
+   LOADING / EMPTY
+   ========================================================= */
+.loading-row {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-light);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--purple);
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-light);
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto 16px;
+  color: var(--text-light);
+  opacity: 0.6;
+}
+
+.empty-state h4 {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-gray);
+  margin-bottom: 6px;
+}
+
+.empty-state p { font-size: 13.5px; color: var(--text-light); }
+
+/* =========================================================
+   STATS
+   ========================================================= */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.stat {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 22px;
+  transition: all 0.2s;
+  min-width: 0;
+}
+
+.stat:hover {
+  border-color: rgba(82, 48, 160, 0.25);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+
+.stat-icon {
+  width: 42px; height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--purple-light);
+  color: var(--purple);
+}
+
+.stat-icon.green { background: var(--green-bg); color: var(--green); }
+.stat-icon.blue  { background: var(--blue-bg); color: var(--blue); }
+.stat-icon.orange { background: var(--orange-bg); color: var(--orange); }
+
+.stat-icon svg { width: 20px; height: 20px; }
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-dark);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-family: 'JetBrains Mono', monospace;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.stat-label { font-size: 13px; color: var(--text-gray); font-weight: 500; margin-top: 6px; }
+
+/* =========================================================
+   CARD
+   ========================================================= */
+.card {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 24px;
+  margin-bottom: 20px;
+  min-width: 0;
+}
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.card-title { font-size: 16px; font-weight: 700; color: var(--text-dark); letter-spacing: -0.01em; }
+.card-subtitle { font-size: 13px; color: var(--text-gray); margin-top: 3px; }
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: 0 4px 12px var(--purple-glow);
+}
+
+.btn-primary:hover {
+  background: var(--purple-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px var(--purple-glow);
+}
+
+.btn-secondary { background: var(--bg-alt); color: var(--text-dark); border: 1px solid var(--border); }
+.btn-secondary:hover { background: #f0f0f3; border-color: #d4d4d9; }
+
+.btn-ghost { background: transparent; color: var(--text-gray); }
+.btn-ghost:hover { background: var(--bg-alt); color: var(--text-dark); }
+
+.btn-danger { background: var(--red-bg); color: var(--red); }
+.btn-danger:hover { background: var(--red); color: #fff; }
+
+.btn:disabled { opacity: 0.55; cursor: not-allowed; }
+
+.btn svg { width: 16px; height: 16px; }
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+.table-wrap { overflow-x: auto; border: 1px solid var(--border); -webkit-overflow-scrolling: touch; }
+
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 600px; }
+table thead { background: var(--bg-alt); }
+
+table th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-light);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+table td { padding: 14px 16px; border-top: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+table tr:hover td { background: rgba(82, 48, 160, 0.02); }
+
+.mono { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; color: var(--text-dark); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.badge::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+.badge-success { background: var(--green-bg); color: var(--green); }
+.badge-error   { background: var(--red-bg);   color: var(--red); }
+.badge-warning { background: var(--orange-bg); color: var(--orange); }
+.badge-info    { background: var(--blue-bg);  color: var(--blue); }
+
+/* =========================================================
+   FORMS
+   ========================================================= */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.field.full { grid-column: 1 / -1; }
+
+.field label { font-size: 13px; font-weight: 600; color: var(--text-dark); }
+
+.field input,
+.field textarea,
+.field select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  font-size: 14.5px;
+  color: var(--text);
+  background: #fff;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.field input:disabled { background: var(--bg-alt); color: var(--text-gray); cursor: not-allowed; }
+
+.field textarea { resize: vertical; min-height: 110px; }
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(82, 48, 160, 0.1);
+}
+
+.field-hint { font-size: 12px; color: var(--text-light); }
+
+.form-status { font-size: 13.5px; min-height: 20px; margin-top: 4px; }
+.form-status.error   { color: var(--red); }
+.form-status.success { color: var(--purple); }
+.form-status.info    { color: var(--text-gray); }
+
+.form-actions { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+/* =========================================================
+   CREDITS HERO
+   ========================================================= */
+.credits-hero {
+  background: linear-gradient(135deg, #5230a0 0%, #3d2278 100%);
+  padding: 36px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.credits-hero::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.credits-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -100px; left: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.credits-inner {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: center;
+}
+
+.credits-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.credits-value {
+  font-size: 54px;
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  font-family: 'JetBrains Mono', monospace;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.credits-value span {
+  font-size: 18px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 0;
+}
+
+.credits-desc {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 12px;
+  max-width: 460px;
+}
+
+.credits-icon {
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.credits-icon svg { width: 48px; height: 48px; color: #fff; }
+
+/* =========================================================
+   PACKAGES
+   ========================================================= */
+.packages {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+.package {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  text-align: center;
+}
+
+.package:hover { border-color: var(--purple); transform: translateY(-3px); box-shadow: var(--shadow-md); }
+
+.package.featured { border-color: var(--purple); background: linear-gradient(180deg, #fff 0%, var(--purple-light) 100%); }
+
+.package-badge {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px;
+  background: var(--purple);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.package-amount {
+  font-size: 32px;
+  font-weight: 900;
+  color: var(--text-dark);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.package-unit {
+  font-size: 12px;
+  color: var(--text-light);
+  font-weight: 600;
+  margin-top: 6px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.package-price {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--purple);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.package-note { font-size: 11.5px; color: var(--text-light); margin-top: 4px; }
+
+/* =========================================================
+   LOGS
+   ========================================================= */
+.logs-box {
+  background: #1e1e24;
+  padding: 20px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: #d0d0d8;
+  max-height: 480px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.logs-box::-webkit-scrollbar { width: 8px; }
+.logs-box::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.03); }
+.logs-box::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); }
+
+.log-line { padding: 2px 0; }
+.log-time { color: #6a6a78; margin-right: 10px; }
+.log-system { color: #a8a8b5; }
+.log-info    { color: #6ab0e4; }
+.log-success { color: #6ad48a; }
+.log-warning { color: #e4c46a; }
+.log-error   { color: #e47878; }
+
+/* =========================================================
+   FILES GRID
+   ========================================================= */
+.files-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.file-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 18px;
+  transition: all 0.2s;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.file-card:hover {
+  border-color: rgba(82, 48, 160, 0.3);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.file-cost-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  background: var(--purple-light);
+  color: var(--purple);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.file-cost-badge svg { width: 11px; height: 11px; }
+
+.file-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding-right: 80px;
+}
+
+.file-icon {
+  width: 46px;
+  height: 46px;
+  background: var(--purple-light);
+  color: var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-icon svg { width: 22px; height: 22px; }
+
+.file-info { flex: 1; min-width: 0; }
+
+.file-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 4px;
+}
+
+.file-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.file-size-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: var(--bg-alt);
+  color: var(--text-gray);
+  font-size: 10.5px;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.file-date {
+  font-size: 11px;
+  color: var(--text-light);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.file-card-actions {
+  display: flex;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.file-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.15s;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+}
+
+.file-btn svg { width: 15px; height: 15px; }
+
+.file-btn-primary {
+  background: var(--purple);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--purple-glow);
+}
+
+.file-btn-primary:hover {
+  background: var(--purple-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px var(--purple-glow);
+}
+
+.file-btn-primary:disabled {
+  background: var(--border);
+  color: var(--text-light);
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================================================
+   SERVER (códigos)
+   ========================================================= */
+.server-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  background: #fff;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  transition: all 0.2s;
+}
+
+.server-item:hover {
+  border-color: rgba(82, 48, 160, 0.3);
+  box-shadow: var(--shadow-md);
+}
+
+.server-icon {
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(135deg, #5230a0, #3d2278);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 22px;
+  font-weight: 800;
+  box-shadow: 0 6px 16px var(--purple-glow);
+}
+
+.server-info { flex: 1; min-width: 200px; }
+
+.server-label {
+  font-size: 11.5px;
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.server-imei {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--text-dark);
+  font-weight: 700;
+}
+
+.server-date {
+  font-size: 11.5px;
+  color: var(--text-light);
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 4px;
+}
+
+.server-code-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 200px;
+}
+
+.server-code-label {
+  font-size: 11.5px;
+  color: var(--text-light);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.server-code-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 22px;
+  color: var(--purple);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  background: var(--purple-light);
+  padding: 6px 14px;
+  border: 1px solid rgba(82, 48, 160, 0.15);
+}
+
+.server-copy-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--purple);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  transition: all 0.15s;
+  border: none;
+  cursor: pointer;
+}
+
+.server-copy-btn:hover {
+  background: var(--purple-dark);
+  transform: translateY(-1px);
+}
+
+.server-copy-btn svg { width: 13px; height: 13px; }
+
+/* =========================================================
+   FILES TOOLBAR
+   ========================================================= */
+.files-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.files-search {
+  flex: 1;
+  min-width: 220px;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.files-search svg:first-child {
+  position: absolute;
+  left: 14px;
+  width: 18px;
+  height: 18px;
+  color: var(--text-light);
+  pointer-events: none;
+}
+
+.files-search input {
+  width: 100%;
+  padding: 11px 42px 11px 42px;
+  border: 1px solid var(--border);
+  font-size: 14.5px;
+  color: var(--text);
+  background: #fff;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.files-search input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 0 3px rgba(82, 48, 160, 0.1);
+}
+
+.files-search-clear {
+  position: absolute;
+  right: 10px;
+  width: 26px;
+  height: 26px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  transition: all 0.15s;
+}
+
+.files-search-clear.visible { display: flex; }
+.files-search-clear:hover { background: var(--bg-alt); color: var(--text-dark); }
+.files-search-clear svg { width: 14px; height: 14px; }
+
+.files-count {
+  font-size: 13px;
+  color: var(--text-gray);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* =========================================================
+   HELP
+   ========================================================= */
+.help-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.help-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 22px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.help-card:hover { border-color: rgba(82, 48, 160, 0.25); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+.help-icon {
+  width: 42px;
+  height: 42px;
+  background: var(--purple-light);
+  color: var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+
+.help-icon svg { width: 20px; height: 20px; }
+
+.help-card h4 { font-size: 14.5px; font-weight: 700; color: var(--text-dark); margin-bottom: 6px; }
+.help-card p { font-size: 13px; color: var(--text-gray); line-height: 1.55; }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.toast {
+  background: #fff;
+  border: 1px solid var(--border);
+  padding: 14px 18px;
+  min-width: 280px;
+  max-width: 400px;
+  box-shadow: var(--shadow-lg);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  pointer-events: auto;
+  animation: slideIn 0.3s ease;
+  position: relative;
+  padding-left: 20px;
+}
+
+.toast::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 15%; bottom: 15%;
+  width: 3px;
+}
+
+.toast.success::before { background: var(--green); }
+.toast.error::before   { background: var(--red); }
+.toast.info::before    { background: var(--blue); }
+.toast.warning::before { background: var(--orange); }
+
+.toast-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toast.success .toast-icon { background: var(--green-bg); color: var(--green); }
+.toast.error .toast-icon   { background: var(--red-bg);   color: var(--red); }
+.toast.info .toast-icon    { background: var(--blue-bg);  color: var(--blue); }
+.toast.warning .toast-icon { background: var(--orange-bg); color: var(--orange); }
+
+.toast-icon svg { width: 16px; height: 16px; }
+
+.toast-body { flex: 1; color: var(--text-dark); }
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 15, 20, 0.55);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: #fff;
+  width: 100%;
+  max-width: 480px;
+  padding: 32px;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3);
+  position: relative;
+  max-height: 92vh;
+  overflow-y: auto;
+  animation: modalIn 0.25s ease;
+}
+
+@keyframes modalIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-close {
+  position: absolute;
+  top: 14px; right: 14px;
+  width: 32px; height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-gray);
+  font-size: 18px;
+  transition: all 0.15s;
+}
+
+.modal-close:hover { background: var(--bg-alt); color: var(--text-dark); }
+
+.modal h3 { font-size: 20px; font-weight: 800; color: var(--text-dark); letter-spacing: -0.02em; margin-bottom: 6px; }
+.modal-subtitle { font-size: 14px; color: var(--text-gray); margin-bottom: 22px; }
+
+.info-list { background: var(--bg-alt); padding: 16px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 10px; }
+.info-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; }
+.info-row span:first-child { color: var(--text-gray); }
+.info-row span:last-child { color: var(--text-dark); font-weight: 600; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+
+/* =========================================================
+   DOWNLOAD MODAL
+   ========================================================= */
+.download-summary {
+  background: var(--bg-alt);
+  padding: 18px;
+  margin-bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.download-summary-icon {
+  width: 48px;
+  height: 48px;
+  background: var(--purple-light);
+  color: var(--purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.download-summary-icon svg { width: 22px; height: 22px; }
+
+.download-summary-info { flex: 1; min-width: 0; }
+
+.download-summary-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 2px;
+}
+
+.download-summary-size {
+  font-size: 12px;
+  color: var(--text-light);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.download-balance {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #f4f0fc 0%, #faf7ff 100%);
+  border: 1px solid rgba(82, 48, 160, 0.12);
+  margin-bottom: 16px;
+}
+
+.download-balance-row { display: flex; flex-direction: column; gap: 2px; }
+.download-balance-row.right { text-align: right; }
+
+.download-balance-label {
+  font-size: 10.5px;
+  color: var(--text-gray);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.download-balance-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-dark);
+  font-family: 'JetBrains Mono', monospace;
+  line-height: 1.2;
+}
+
+.download-balance-value.after { color: var(--green); }
+
+.download-balance-arrow {
+  color: var(--purple);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.download-warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  background: var(--red-bg);
+  color: var(--red);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.download-warning svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* =========================================================
+   RESPONSIVE — 1280px
+   ========================================================= */
+@media (max-width: 1280px) {
+  .app { grid-template-columns: 240px 1fr; }
+  .content { padding: 28px; }
+}
+
+/* =========================================================
+   RESPONSIVE — 1024px
+   ========================================================= */
+@media (max-width: 1024px) {
+  .app { grid-template-columns: 220px 1fr; }
+  .content { padding: 24px; }
+  .topbar { padding: 0 24px; }
+  .stats { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+  .credits-value { font-size: 46px; }
+}
+
+/* =========================================================
+   RESPONSIVE — 860px (sidebar desliza)
+   ========================================================= */
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 280px;
+    max-width: 85vw;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 200;
+    box-shadow: 20px 0 60px rgba(0, 0, 0, 0.15);
+  }
+
+  .sidebar.open { transform: translateX(0); }
+
+  .menu-toggle-mobile { display: flex; }
+  .content { padding: 22px 20px; }
+  .topbar { padding: 0 20px; height: 64px; }
+  .page-title { font-size: 17px; }
+  .page-subtitle { font-size: 12.5px; }
+
+  .credits-inner { grid-template-columns: 1fr; text-align: center; gap: 24px; }
+  .credits-icon { margin: 0 auto; }
+  .credits-value { justify-content: center; }
+
+  .stats { grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat { padding: 18px; }
+  .stat-value { font-size: 22px; }
+
+  .card { padding: 20px; }
+  .card-head { margin-bottom: 16px; }
+
+  .files-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+
+  .topbar-right { gap: 8px; }
+  .icon-btn { width: 36px; height: 36px; }
+
+  .toast-container { top: 12px; right: 12px; left: 12px; }
+  .toast { min-width: 0; max-width: 100%; }
+
+  .server-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .server-code-box {
+    align-items: flex-start;
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+/* =========================================================
+   RESPONSIVE — 640px
+   ========================================================= */
+@media (max-width: 640px) {
+  .content { padding: 18px 16px; }
+  .topbar { padding: 0 16px; height: 60px; gap: 12px; }
+  .page-title { font-size: 16px; }
+  .page-subtitle { display: none; }
+  .menu-toggle-mobile { width: 36px; height: 36px; }
+
+  .stats { grid-template-columns: 1fr; gap: 10px; }
+  .stat { padding: 16px; }
+  .stat-value { font-size: 22px; }
+
+  .card { padding: 16px; margin-bottom: 14px; }
+
+  .card-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .card-actions {
+    width: 100%;
+  }
+
+  .card-actions .btn {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .credits-hero { padding: 24px 20px; margin-bottom: 18px; }
+  .credits-value { font-size: 38px; }
+  .credits-value span { font-size: 15px; }
+  .credits-icon { width: 72px; height: 72px; }
+  .credits-icon svg { width: 34px; height: 34px; }
+
+  .packages { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .package { padding: 18px 12px; }
+  .package-amount { font-size: 26px; }
+  .package-price { font-size: 17px; }
+  .package-note { display: none; }
+
+  table th { padding: 10px 12px; font-size: 10.5px; }
+  table td { padding: 12px; font-size: 13px; }
+
+  .files-grid { grid-template-columns: 1fr; }
+
+  .file-card-top { padding-right: 70px; }
+
+  .form-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  .form-actions { flex-direction: column; }
+  .form-actions .btn { width: 100%; }
+
+  .modal { padding: 24px 18px; max-width: 100%; }
+  .modal h3 { font-size: 18px; }
+  .modal-subtitle { font-size: 13px; }
+
+  .download-balance {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .download-balance-row,
+  .download-balance-row.right { text-align: center; align-items: center; }
+
+  .download-balance-arrow { transform: rotate(90deg); }
+
+  .help-grid { grid-template-columns: 1fr; gap: 12px; }
+
+  .files-toolbar { flex-direction: column; align-items: stretch; gap: 10px; }
+  .files-count { text-align: right; font-size: 12px; }
+
+  .logs-box { padding: 14px; font-size: 11.5px; max-height: 380px; }
+
+  .server-code-value { font-size: 18px; }
+}
+
+/* =========================================================
+   RESPONSIVE — 480px
+   ========================================================= */
+@media (max-width: 480px) {
+  .content { padding: 16px 12px; }
+  .topbar { padding: 0 12px; height: 56px; }
+  .page-title { font-size: 15px; }
+
+  .icon-btn { width: 34px; height: 34px; }
+  .icon-btn svg { width: 16px; height: 16px; }
+
+  .stat { padding: 14px; }
+  .stat-icon { width: 36px; height: 36px; }
+  .stat-icon svg { width: 18px; height: 18px; }
+  .stat-value { font-size: 20px; }
+  .stat-label { font-size: 12px; }
+
+  .card { padding: 14px; }
+
+  .credits-value { font-size: 32px; }
+  .credits-value span { font-size: 13px; }
+
+  .packages { grid-template-columns: 1fr; }
+  .package-note { display: block; }
+
+  .badge { font-size: 10.5px; padding: 3px 8px; }
+  .mono { font-size: 11.5px; }
+
+  .btn { padding: 10px 14px; font-size: 13.5px; }
+  .file-btn { padding: 9px 12px; font-size: 12.5px; }
+
+  .file-card-top { padding-right: 0; flex-wrap: wrap; }
+  .file-cost-badge { position: static; align-self: flex-start; margin-bottom: 8px; order: -1; }
+
+  .toast { padding: 12px 14px; font-size: 13px; }
+  .toast-icon { width: 28px; height: 28px; }
+
+  .server-icon { width: 44px; height: 44px; font-size: 18px; }
+  .server-code-value { font-size: 16px; padding: 5px 10px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- =========================================================
+       SIDEBAR
+       ========================================================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">NC</div>
+      <div class="logo-text">
+        <div class="logo-title">NETCODES</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Painel</div>
+
+      <div class="nav-item active" data-page="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="9" rx="1"/>
+          <rect x="14" y="3" width="7" height="5" rx="1"/>
+          <rect x="14" y="12" width="7" height="9" rx="1"/>
+          <rect x="3" y="16" width="7" height="5" rx="1"/>
+        </svg>
+        Visão geral
+      </div>
+
+      <div class="nav-item" data-page="credits">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M12 7v10M9 10h6M9 14h6"/>
+        </svg>
+        Créditos
+        <span class="nav-badge" id="creditsBadge">—</span>
+      </div>
+
+      <div class="nav-item" data-page="activity">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+        </svg>
+        Atividades
+      </div>
+
+      <div class="nav-item" data-page="logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+          <line x1="8" y1="13" x2="16" y2="13"/>
+          <line x1="8" y1="17" x2="14" y2="17"/>
+        </svg>
+        Logs
+      </div>
+
+      <div class="nav-item" data-page="files">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        Ficheiros
+      </div>
+
+      <div class="nav-item" data-page="server">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="6" rx="2"/>
+          <rect x="2" y="15" width="20" height="6" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/>
+          <line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
+        Servidor
+        <span class="nav-badge green" id="serverBadge" style="display:none;">0</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Conta</div>
+
+      <div class="nav-item" data-page="security">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Segurança
+      </div>
+
+      <div class="nav-item" data-page="help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+          <line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        Ajuda
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card" data-page="security">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <div class="user-info">
+          <div class="user-name" id="userEmail">—</div>
+          <div class="user-role">Membro</div>
+        </div>
+      </div>
+
+      <button class="logout-btn" onclick="logout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        Sair da conta
+      </button>
+    </div>
+  </aside>
+
+  <!-- Overlay mobile para fechar a sidebar -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+  <!-- =========================================================
+       MAIN
+       ========================================================= -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle-mobile" onclick="toggleSidebar()" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
+          </svg>
+        </button>
+        <div style="min-width:0;">
+          <div class="page-title" id="pageTitle">Visão geral</div>
+          <div class="page-subtitle" id="pageSubtitle">Carregando...</div>
+        </div>
+      </div>
+
+      <div class="topbar-right">
+        <button class="icon-btn" title="Recarregar" onclick="refreshAll()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+        </button>
+
+        <button class="icon-btn" title="Ajuda" onclick="showPage('help')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="content">
+
+      <!-- =========================================================
+           VISÃO GERAL
+           ========================================================= -->
+      <div class="content-page active" id="page-overview">
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-head">
+              <div class="stat-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="9"/>
+                  <path d="M12 7v10M9 10h6M9 14h6"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statCredits">—</div>
+            <div class="stat-label">Créditos disponíveis</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-head">
+              <div class="stat-icon blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statOperations">—</div>
+            <div class="stat-label">Operações realizadas</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-head">
+              <div class="stat-icon green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statSuccess">—</div>
+            <div class="stat-label">Sucessos</div>
+          </div>
+
+          <div class="stat">
+            <div class="stat-head">
+              <div class="stat-icon orange">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+            </div>
+            <div class="stat-value" id="statLast">—</div>
+            <div class="stat-label">Última atividade</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Atividades recentes</div>
+              <div class="card-subtitle">Últimas 5 operações registradas pela ferramenta</div>
+            </div>
+            <button class="btn btn-ghost" onclick="showPage('activity')">
+              Ver todas
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data</th>
+                  <th>Operação</th>
+                  <th>Dispositivo</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="recentActivityTable">
+                <tr><td colspan="4" class="loading-row"><div class="spinner"></div>Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           CRÉDITOS
+           ========================================================= -->
+      <div class="content-page" id="page-credits">
+        <div class="credits-hero">
+          <div class="credits-inner">
+            <div>
+              <div class="credits-label">Saldo atual</div>
+              <div class="credits-value">
+                <span id="creditsBigValue">—</span>
+                <span>créditos</span>
+              </div>
+              <p class="credits-desc">
+                Cada download de ficheiro e cada operação realizada consome créditos.
+                Compre pacotes para continuar usando todas as funcionalidades.
+              </p>
+            </div>
+            <div class="credits-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 7v10M9 10h6M9 14h6"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Comprar créditos</div>
+              <div class="card-subtitle">Valores em Meticais (MZN)</div>
+            </div>
+          </div>
+
+          <div class="packages" id="packagesGrid"></div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           ATIVIDADES
+           ========================================================= -->
+      <div class="content-page" id="page-activity">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Histórico de atividades</div>
+              <div class="card-subtitle">Todas as operações registradas na ferramenta</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="refreshActivity()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Recarregar
+              </button>
+              <button class="btn btn-secondary" onclick="exportActivityCSV()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                Exportar
+              </button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data / Hora</th>
+                  <th>Operação</th>
+                  <th>Dispositivo</th>
+                  <th>Créditos</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="activityTable">
+                <tr><td colspan="5" class="loading-row"><div class="spinner"></div>Carregando...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           LOGS
+           ========================================================= -->
+      <div class="content-page" id="page-logs">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Logs da ferramenta</div>
+              <div class="card-subtitle">Registros enviados pelo NET CODES TOOL</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="refreshLogs()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Recarregar
+              </button>
+              <button class="btn btn-secondary" onclick="copyLogs()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2"/>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                </svg>
+                Copiar
+              </button>
+            </div>
+          </div>
+
+          <div class="logs-box" id="logsBox">
+            <div class="loading-row"><div class="spinner"></div>Carregando logs...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           FICHEIROS
+           ========================================================= -->
+      <div class="content-page" id="page-files">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Ficheiros disponíveis</div>
+              <div class="card-subtitle">Cada download consome 1 crédito</div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="refreshFiles()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Recarregar
+              </button>
+            </div>
+          </div>
+
+          <div class="files-toolbar">
+            <div class="files-search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <input type="text" id="fileSearchInput" placeholder="Pesquisar por nome do ficheiro..." />
+              <button type="button" id="fileSearchClear" class="files-search-clear" title="Limpar">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"/>
+                  <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="files-count" id="filesCount">—</div>
+          </div>
+
+          <div class="files-grid" id="filesGrid">
+            <div class="loading-row"><div class="spinner"></div>Carregando ficheiros...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           SERVIDOR — códigos enviados pelo admin
+           ========================================================= -->
+      <div class="content-page" id="page-server">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Códigos do servidor</div>
+              <div class="card-subtitle">
+                Respostas enviadas pela equipa NETCODES para as suas submissões
+              </div>
+            </div>
+            <div class="card-actions">
+              <button class="btn btn-secondary" onclick="refreshServer()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 4 23 10 17 10"/>
+                  <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+                </svg>
+                Recarregar
+              </button>
+            </div>
+          </div>
+
+          <div id="serverList">
+            <div class="loading-row"><div class="spinner"></div>Carregando códigos...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           SEGURANÇA
+           ========================================================= -->
+      <div class="content-page" id="page-security">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Informações da conta</div>
+              <div class="card-subtitle">Dados do usuário logado</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Endereço de email</label>
+              <input type="email" id="accountEmail" disabled />
+              <div class="field-hint">O email da conta não pode ser alterado.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Alterar senha</div>
+              <div class="card-subtitle">Defina uma nova senha para a sua conta</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field full">
+              <label>Senha atual</label>
+              <input type="password" id="currentPassword" placeholder="Digite a senha atual" />
+            </div>
+
+            <div class="field">
+              <label>Nova senha</label>
+              <input type="password" id="newPassword" placeholder="Mínimo 6 caracteres" />
+            </div>
+
+            <div class="field">
+              <label>Confirmar nova senha</label>
+              <input type="password" id="confirmPassword" placeholder="Repita a nova senha" />
+            </div>
+          </div>
+
+          <div class="form-status" id="passwordStatus"></div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="changePasswordBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              Alterar senha
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- =========================================================
+           AJUDA
+           ========================================================= -->
+      <div class="content-page" id="page-help">
+        <div class="help-grid">
+          <div class="help-card" onclick="window.open('mailto:suporte@netcodestool.com','_blank')">
+            <div class="help-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16v16H4z"/>
+                <path d="M22 6l-10 7L2 6"/>
+              </svg>
+            </div>
+            <h4>Falar com o suporte</h4>
+            <p>Envie um email para a nossa equipe e receba ajuda personalizada.</p>
+          </div>
+
+          <div class="help-card" onclick="window.open('../index.html#faq','_blank')">
+            <div class="help-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h4>Perguntas frequentes</h4>
+            <p>Consulte as respostas para as dúvidas mais comuns.</p>
+          </div>
+
+          <div class="help-card" onclick="showToast('Documentação em breve.', 'info')">
+            <div class="help-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+              </svg>
+            </div>
+            <h4>Documentação</h4>
+            <p>Guias passo a passo para cada função da ferramenta.</p>
+          </div>
+
+          <div class="help-card" onclick="showToast('Use o formulário abaixo para reportar.', 'info')">
+            <div class="help-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h4>Reportar um problema</h4>
+            <p>Encontrou um bug? Nos avise e nós vamos corrigir.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Enviar mensagem</div>
+              <div class="card-subtitle">Preencha o formulário abaixo para falar com o suporte</div>
+            </div>
+          </div>
+
+          <div class="form-grid">
+            <div class="field">
+              <label>Assunto</label>
+              <select id="helpSubject">
+                <option>Suporte técnico</option>
+                <option>Problema com créditos</option>
+                <option>Reportar bug</option>
+                <option>Sugestão</option>
+                <option>Outro</option>
+              </select>
+            </div>
+
+            <div class="field full">
+              <label>Mensagem</label>
+              <textarea id="helpMessage" placeholder="Descreva detalhadamente a sua dúvida ou problema..."></textarea>
+            </div>
+          </div>
+
+          <div class="form-status" id="helpStatus"></div>
+
+          <div class="form-actions">
+            <button class="btn btn-primary" id="sendHelpBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"/>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+              </svg>
+              Enviar mensagem
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- =========================================================
+     MODAL: CONFIRMAR COMPRA DE CRÉDITOS
+     ========================================================= -->
+<div class="modal-overlay" id="buyModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('buyModal')">✕</button>
+    <h3>Confirmar compra</h3>
+    <p class="modal-subtitle">Confira os detalhes antes de prosseguir com o pagamento</p>
+
+    <div class="info-list">
+      <div class="info-row"><span>Pacote</span><span id="buyPackageName">—</span></div>
+      <div class="info-row"><span>Créditos</span><span id="buyPackageCredits">—</span></div>
+      <div class="info-row"><span>Preço</span><span id="buyPackagePrice">—</span></div>
+    </div>
+
+    <div class="form-status" id="buyStatus"></div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal('buyModal')">Cancelar</button>
+      <button class="btn btn-primary" id="confirmBuyBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 11l3 3L22 4"/>
+        </svg>
+        Confirmar pagamento
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     MODAL: CONFIRMAR DOWNLOAD (1 CRÉDITO)
+     ========================================================= -->
+<div class="modal-overlay" id="downloadModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('downloadModal')">✕</button>
+    <h3>Confirmar download</h3>
+    <p class="modal-subtitle">Este download irá consumir 1 crédito da sua conta</p>
+
+    <div class="download-summary">
+      <div class="download-summary-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+      </div>
+      <div class="download-summary-info">
+        <div class="download-summary-name" id="dlFileName">—</div>
+        <div class="download-summary-size" id="dlFileSize">—</div>
+      </div>
+    </div>
+
+    <div class="download-balance">
+      <div class="download-balance-row">
+        <div class="download-balance-label">Saldo atual</div>
+        <div class="download-balance-value" id="dlBalanceBefore">—</div>
+      </div>
+      <div class="download-balance-arrow">→</div>
+      <div class="download-balance-row right">
+        <div class="download-balance-label">Após download</div>
+        <div class="download-balance-value after" id="dlBalanceAfter">—</div>
+      </div>
+    </div>
+
+    <div class="download-warning" id="dlWarning" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+        <line x1="12" y1="9" x2="12" y2="13"/>
+        <line x1="12" y1="17" x2="12.01" y2="17"/>
+      </svg>
+      <span id="dlWarningText">Créditos insuficientes.</span>
+    </div>
+
+    <div class="form-status" id="dlStatus"></div>
+
+    <div class="form-actions">
+      <button class="btn btn-secondary" onclick="closeModal('downloadModal')">Cancelar</button>
+      <button class="btn btn-primary" id="confirmDownloadBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Baixar por 1 crédito
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+const SUPABASE_URL = "https://avtysbssgfzmvpvdbjjr.supabase.co";
+const SUPABASE_KEY = "sb_publishable__cv5Xmw3KmPEJQVIg_uL8w_ncvFsYxQ";
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+const state = {
+  email: '',
+  token: '',
+  userId: '',
+  credits: 0,
+  activities: [],
+  logs: [],
+  files: [],
+  allFiles: [],
+  serverCodes: []
+};
+
+const DOWNLOAD_COST = 1;
+
+const PACKAGES = [
+  { credits: 10,  price_mzn: 150,   label: 'Iniciante',  note: '15 MZN por crédito' },
+  { credits: 50,  price_mzn: 600,   label: 'Popular',    note: '12 MZN por crédito', featured: true },
+  { credits: 100, price_mzn: 1000,  label: 'Profissional', note: '10 MZN por crédito' },
+  { credits: 500, price_mzn: 4000,  label: 'Empresa',    note: '8 MZN por crédito' }
+];
+
+/* =========================================================
+   INICIALIZAÇÃO
+   ========================================================= */
+window.addEventListener('DOMContentLoaded', async () => {
+  loadSession();
+  if (!state.email || !state.token) {
+    window.location.replace('../index.html');
+    return;
+  }
+
+  updateUserUI();
+  renderPackages();
+  setupNav();
+  setupPasswordForm();
+  setupHelpForm();
+  setupBuyModal();
+  setupDownloadModal();
+  setupFileSearch();
+  setupSidebarOverlay();
+
+  await refreshAll();
+
+  // Polling do servidor (código enviado pelo admin) a cada 15s
+  setInterval(() => {
+    if (state.userId) refreshServer().catch(() => {});
+  }, 15000);
+});
+
+function loadSession() {
+  try {
+    state.email = localStorage.getItem('nc_user_email') || '';
+    state.token = localStorage.getItem('nc_user_token') || '';
+    state.userId = localStorage.getItem('nc_user_id') || '';
+  } catch (e) {}
+}
+
+function updateUserUI() {
+  const emailEl = document.getElementById('userEmail');
+  const avatarEl = document.getElementById('userAvatar');
+  const accountEmailInput = document.getElementById('accountEmail');
+
+  if (emailEl) emailEl.textContent = state.email;
+  if (accountEmailInput) accountEmailInput.value = state.email;
+  if (avatarEl) avatarEl.textContent = (state.email || 'U').charAt(0).toUpperCase();
+}
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+async function supabaseFetch(path, options = {}) {
+  const url = SUPABASE_URL + path;
+  const headers = {
+    'apikey': SUPABASE_KEY,
+    'Authorization': 'Bearer ' + state.token,
+    'Content-Type': 'application/json',
+    ...(options.headers || {})
+  };
+
+  const resp = await fetch(url, { ...options, headers });
+
+  if (!resp.ok) {
+    let error = 'HTTP ' + resp.status;
+    try {
+      const body = await resp.json();
+      error = body.message || body.msg || body.error_description || body.hint || error;
+    } catch (e) {}
+    throw new Error(error);
+  }
+
+  if (resp.status === 204) return null;
+  return resp.json();
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text == null ? '' : String(text);
+  return div.innerHTML;
+}
+
+function formatMZN(value) {
+  return new Intl.NumberFormat('pt-MZ', {
+    style: 'currency',
+    currency: 'MZN',
+    minimumFractionDigits: 2
+  }).format(value);
+}
+
+function formatDate(value) {
+  if (!value) return '—';
+  try {
+    const d = new Date(value);
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  } catch (e) { return value; }
+}
+
+function formatFileSize(bytes) {
+  if (!bytes && bytes !== 0) return '—';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  if (bytes < 1024 * 1024 * 1024) return (bytes / 1024 / 1024).toFixed(2) + ' MB';
+  return (bytes / 1024 / 1024 / 1024).toFixed(2) + ' GB';
+}
+
+/* =========================================================
+   REFRESH GERAL
+   ========================================================= */
+async function refreshAll() {
+  await Promise.all([
+    refreshCredits(),
+    refreshActivity(),
+    refreshLogs(),
+    refreshFiles(),
+    refreshServer()
+  ]);
+  updateStats();
+}
+
+async function refreshCredits() {
+  try {
+    const data = await supabaseFetch(
+      `/rest/v1/profiles?id=eq.${state.userId}&select=credits`,
+      { method: 'GET' }
+    );
+
+    if (data && data.length > 0) {
+      state.credits = data[0].credits ?? 0;
+    } else {
+      await supabaseFetch('/rest/v1/profiles', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({
+          id: state.userId,
+          email: state.email,
+          credits: 15
+        })
+      });
+      state.credits = 15;
+    }
+  } catch (err) {
+    console.warn('refreshCredits:', err.message);
+    state.credits = parseInt(localStorage.getItem('nc_user_credits') || '15', 10);
+  }
+
+  try { localStorage.setItem('nc_user_credits', String(state.credits)); } catch (e) {}
+
+  document.getElementById('statCredits').textContent = state.credits;
+  document.getElementById('creditsBadge').textContent = state.credits;
+  document.getElementById('creditsBigValue').textContent = state.credits;
+}
+
+async function refreshActivity() {
+  try {
+    const data = await supabaseFetch(
+      `/rest/v1/activities?user_id=eq.${state.userId}&select=*&order=created_at.desc&limit=200`,
+      { method: 'GET' }
+    );
+    state.activities = Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.warn('refreshActivity:', err.message);
+    state.activities = [];
+  }
+  renderRecentActivity();
+  renderAllActivity();
+}
+
+async function refreshLogs() {
+  try {
+    const data = await supabaseFetch(
+      `/rest/v1/logs?user_id=eq.${state.userId}&select=*&order=created_at.desc&limit=500`,
+      { method: 'GET' }
+    );
+    state.logs = Array.isArray(data) ? data.reverse() : [];
+  } catch (err) {
+    console.warn('refreshLogs:', err.message);
+    state.logs = [];
+  }
+  renderLogs();
+}
+
+async function refreshFiles() {
+  try {
+    const data = await supabaseFetch(
+      `/rest/v1/files?or=(user_id.eq.${state.userId},user_id.is.null)&select=*&order=created_at.desc&limit=200`,
+      { method: 'GET' }
+    );
+    state.files = Array.isArray(data) ? data : [];
+    state.allFiles = state.files.slice();
+  } catch (err) {
+    console.warn('refreshFiles:', err.message);
+    state.files = [];
+    state.allFiles = [];
+  }
+  renderFiles();
+}
+
+/* =========================================================
+   SERVIDOR — códigos enviados pelo painel admin
+   ========================================================= */
+async function refreshServer() {
+  const badge = document.getElementById('serverBadge');
+  const list = document.getElementById('serverList');
+  if (!list) return;
+
+  try {
+    const data = await supabaseFetch(
+      `/rest/v1/neon_submissions?user_id=eq.${state.userId}` +
+      `&code_sent=eq.true&select=*&order=code_sent_at.desc&limit=100`,
+      { method: 'GET' }
+    );
+
+    state.serverCodes = Array.isArray(data) ? data : [];
+  } catch (err) {
+    console.warn('refreshServer:', err.message);
+    state.serverCodes = [];
+  }
+
+  if (badge) {
+    if (state.serverCodes.length > 0) {
+      badge.textContent = state.serverCodes.length;
+      badge.style.display = '';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  renderServerCodes();
+}
+
+function renderServerCodes() {
+  const list = document.getElementById('serverList');
+  if (!list) return;
+
+  if (!state.serverCodes.length) {
+    list.innerHTML = `
+      <div class="empty-state">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="2" y="3" width="20" height="6" rx="2"/>
+          <rect x="2" y="15" width="20" height="6" rx="2"/>
+          <line x1="6" y1="6" x2="6.01" y2="6"/>
+          <line x1="6" y1="18" x2="6.01" y2="18"/>
+        </svg>
+        <h4>Nenhum código disponível</h4>
+        <p>Assim que a equipa NETCODES responder às suas submissões, os códigos aparecerão aqui.</p>
+      </div>`;
+    return;
+  }
+
+  list.innerHTML = state.serverCodes.map(item => {
+    const imei = item.imei || '—';
+    const code = item.code || '—';
+    const sentAt = item.code_sent_at ? formatDate(item.code_sent_at) : '—';
+    const codeSafe = String(code).replace(/'/g, "\\'");
+
+    return `
+      <div class="server-item">
+        <div class="server-icon">◈</div>
+
+        <div class="server-info">
+          <div class="server-label">IMEI submetido</div>
+          <div class="server-imei">${escapeHtml(imei)}</div>
+          <div class="server-date">${escapeHtml(sentAt)}</div>
+        </div>
+
+        <div class="server-code-box">
+          <div class="server-code-label">Código</div>
+          <div class="server-code-value">${escapeHtml(code)}</div>
+          <button class="server-copy-btn" onclick="copyServerCode('${codeSafe}')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+            Copiar
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function copyServerCode(code) {
+  if (!code || code === '—') {
+    showToast('Nenhum código para copiar.', 'info');
+    return;
+  }
+  navigator.clipboard.writeText(code)
+    .then(() => showToast('Código copiado: ' + code, 'success'))
+    .catch(() => showToast('Não foi possível copiar.', 'error'));
+}
+
+/* =========================================================
+   STATS
+   ========================================================= */
+function updateStats() {
+  const total = state.activities.length;
+  const success = state.activities.filter(a => a.status === 'success').length;
+
+  document.getElementById('statOperations').textContent = total;
+  document.getElementById('statSuccess').textContent = success;
+
+  if (total > 0) {
+    const last = state.activities[0];
+    const time = last.created_at ? formatDate(last.created_at).split(' ')[1] : '—';
+    document.getElementById('statLast').textContent = time;
+    document.getElementById('statLast').style.fontSize = '18px';
+  } else {
+    document.getElementById('statLast').textContent = '—';
+  }
+}
+
+/* =========================================================
+   TABELAS
+   ========================================================= */
+function renderRecentActivity() {
+  const tbody = document.getElementById('recentActivityTable');
+  if (!tbody) return;
+
+  const items = state.activities.slice(0, 5);
+
+  if (!items.length) {
+    tbody.innerHTML = `<tr><td colspan="4"><div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <h4>Sem atividades</h4>
+      <p>As operações realizadas na ferramenta aparecerão aqui.</p>
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = items.map(item => `
+    <tr>
+      <td class="mono">${escapeHtml(formatDate(item.created_at))}</td>
+      <td>${escapeHtml(item.operation || '—')}</td>
+      <td>${escapeHtml(item.device || '—')}</td>
+      <td>${renderStatusBadge(item.status)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderAllActivity() {
+  const tbody = document.getElementById('activityTable');
+  if (!tbody) return;
+
+  if (!state.activities.length) {
+    tbody.innerHTML = `<tr><td colspan="5"><div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <h4>Sem atividades</h4>
+      <p>Nenhuma operação registrada ainda.</p>
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = state.activities.map(item => `
+    <tr>
+      <td class="mono">${escapeHtml(formatDate(item.created_at))}</td>
+      <td>${escapeHtml(item.operation || '—')}</td>
+      <td>${escapeHtml(item.device || '—')}</td>
+      <td class="mono">${item.credits_used ?? 0}</td>
+      <td>${renderStatusBadge(item.status)}</td>
+    </tr>
+  `).join('');
+}
+
+function renderStatusBadge(status) {
+  if (status === 'success') return '<span class="badge badge-success">Sucesso</span>';
+  if (status === 'error')   return '<span class="badge badge-error">Erro</span>';
+  if (status === 'warning') return '<span class="badge badge-warning">Aviso</span>';
+  return '<span class="badge badge-info">Info</span>';
+}
+
+/* =========================================================
+   LOGS
+   ========================================================= */
+function renderLogs() {
+  const box = document.getElementById('logsBox');
+  if (!box) return;
+
+  if (!state.logs.length) {
+    box.innerHTML = `<div style="text-align:center;padding:40px 20px;color:#6a6a78;font-family:'Inter',sans-serif;font-size:14px;">
+      Nenhum log registrado ainda. Os logs enviados pela ferramenta aparecerão aqui.
+    </div>`;
+    return;
+  }
+
+  box.innerHTML = state.logs.map(line => {
+    const time = line.created_at ? formatDate(line.created_at).split(' ')[1] : '';
+    const level = line.level || 'system';
+    return `<div class="log-line"><span class="log-time">[${escapeHtml(time)}]</span><span class="log-${level}">${escapeHtml(line.message || '')}</span></div>`;
+  }).join('');
+
+  box.scrollTop = box.scrollHeight;
+}
+
+function copyLogs() {
+  if (!state.logs.length) {
+    showToast('Nenhum log para copiar.', 'info');
+    return;
+  }
+  const text = state.logs.map(l => `[${formatDate(l.created_at)}] ${l.message}`).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Logs copiados para a área de transferência.', 'success');
+  }).catch(() => showToast('Não foi possível copiar.', 'error'));
+}
+
+/* =========================================================
+   FICHEIROS
+   ========================================================= */
+let fileSearchQuery = '';
+
+function renderFiles() {
+  const grid = document.getElementById('filesGrid');
+  if (!grid) return;
+
+  const all = state.allFiles || state.files || [];
+  const q = fileSearchQuery.trim().toLowerCase();
+
+  const filtered = q
+    ? all.filter(f => (f.name || '').toLowerCase().includes(q))
+    : all;
+
+  const countEl = document.getElementById('filesCount');
+  if (countEl) {
+    if (!all.length) {
+      countEl.textContent = '';
+    } else if (q) {
+      countEl.textContent = filtered.length + ' de ' + all.length + ' ficheiro(s)';
+    } else {
+      countEl.textContent = all.length + ' ficheiro(s)';
+    }
+  }
+
+  const clearBtn = document.getElementById('fileSearchClear');
+  if (clearBtn) {
+    if (q) clearBtn.classList.add('visible');
+    else clearBtn.classList.remove('visible');
+  }
+
+  if (!all.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <h4>Nenhum ficheiro disponível</h4>
+      <p>Quando o administrador enviar ficheiros para a sua conta, eles aparecerão aqui.</p>
+    </div>`;
+    return;
+  }
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <h4>Nenhum resultado</h4>
+      <p>Nenhum ficheiro corresponde a "<strong>${escapeHtml(fileSearchQuery)}</strong>".</p>
+    </div>`;
+    return;
+  }
+
+  const canAfford = state.credits >= DOWNLOAD_COST;
+
+  grid.innerHTML = filtered.map(f => {
+    const idx = all.indexOf(f);
+    const sizeLabel = formatFileSize(f.size);
+    const dateLabel = formatDate(f.created_at);
+    const isGlobal = !f.user_id;
+
+    return `
+      <div class="file-card">
+        <div class="file-cost-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M12 7v10M9 10h6M9 14h6"/>
+          </svg>
+          ${DOWNLOAD_COST} crédito${DOWNLOAD_COST > 1 ? 's' : ''}
+        </div>
+
+        <div class="file-card-top">
+          <div class="file-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <div class="file-info">
+            <div class="file-name" title="${escapeHtml(f.name || 'arquivo')}">${escapeHtml(f.name || 'arquivo')}</div>
+            <div class="file-meta">
+              <span class="file-size-badge">${escapeHtml(sizeLabel)}</span>
+              ${isGlobal ? '<span class="file-size-badge" style="background:var(--purple-light);color:var(--purple);">🌐 Global</span>' : ''}
+              <span class="file-date">${escapeHtml(dateLabel)}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="file-card-actions">
+          <button class="file-btn file-btn-primary"
+                  onclick="openDownloadModal(${idx})"
+                  ${canAfford ? '' : 'disabled'}>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            ${canAfford ? 'Baixar' : 'Sem créditos'}
+          </button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+/* =========================================================
+   PESQUISA DE FICHEIROS
+   ========================================================= */
+function setupFileSearch() {
+  const input = document.getElementById('fileSearchInput');
+  const clear = document.getElementById('fileSearchClear');
+  if (!input) return;
+
+  let timer = null;
+
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      fileSearchQuery = input.value || '';
+      renderFiles();
+    }, 120);
+  });
+
+  if (clear) {
+    clear.addEventListener('click', () => {
+      input.value = '';
+      fileSearchQuery = '';
+      renderFiles();
+      input.focus();
+    });
+  }
+}
+
+/* =========================================================
+   DOWNLOAD PAGO
+   ========================================================= */
+let pendingDownload = null;
+
+function setupDownloadModal() {
+  const btn = document.getElementById('confirmDownloadBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    if (!pendingDownload) return;
+
+    const status = document.getElementById('dlStatus');
+    const file = pendingDownload.file;
+
+    if (state.credits < DOWNLOAD_COST) {
+      status.className = 'form-status error';
+      status.textContent = 'Créditos insuficientes.';
+      return;
+    }
+
+    status.className = 'form-status info';
+    status.textContent = 'Processando download...';
+    btn.disabled = true;
+
+    try {
+      const newBalance = Math.max(0, state.credits - DOWNLOAD_COST);
+
+      try {
+        await supabaseFetch(
+          `/rest/v1/profiles?id=eq.${state.userId}`,
+          {
+            method: 'PATCH',
+            headers: { 'Prefer': 'return=minimal' },
+            body: JSON.stringify({ credits: newBalance })
+          }
+        );
+      } catch (e) {
+        console.warn('Falha ao debitar via Supabase:', e.message);
+      }
+
+      state.credits = newBalance;
+      try {
+        localStorage.setItem('nc_user_credits', String(state.credits));
+      } catch (e) {}
+
+      try {
+        await supabaseFetch('/rest/v1/activities', {
+          method: 'POST',
+          headers: { 'Prefer': 'return=minimal' },
+          body: JSON.stringify({
+            user_id: state.userId,
+            operation: 'Download: ' + (file.name || 'arquivo'),
+            device: (navigator.userAgent || '').slice(0, 80),
+            credits_used: DOWNLOAD_COST,
+            status: 'success'
+          })
+        });
+      } catch (e) {
+        console.warn('Falha ao registrar atividade:', e.message);
+      }
+
+      if (file.url) {
+        const a = document.createElement('a');
+        a.href = file.url;
+        a.download = file.name || 'download';
+        a.target = '_blank';
+        a.rel = 'noopener';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
+
+      status.className = 'form-status success';
+      status.textContent = 'Download iniciado. ' + DOWNLOAD_COST + ' crédito debitado.';
+      showToast('Download iniciado. ' + DOWNLOAD_COST + ' crédito debitado.', 'success');
+
+      document.getElementById('statCredits').textContent = state.credits;
+      document.getElementById('creditsBadge').textContent = state.credits;
+      document.getElementById('creditsBigValue').textContent = state.credits;
+
+      renderFiles();
+      refreshActivity().catch(() => {});
+
+      setTimeout(() => {
+        closeModal('downloadModal');
+        status.textContent = '';
+        btn.disabled = false;
+        pendingDownload = null;
+      }, 1200);
+
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = err.message || 'Erro ao processar download.';
+      btn.disabled = false;
+    }
+  });
+}
+
+function openDownloadModal(index) {
+  const all = state.allFiles || state.files || [];
+  const file = all[index];
+  if (!file) return;
+
+  if (state.credits < DOWNLOAD_COST) {
+    showToast('Créditos insuficientes para baixar.', 'error');
+    return;
+  }
+
+  pendingDownload = { file, index };
+
+  document.getElementById('dlFileName').textContent = file.name || 'arquivo';
+  document.getElementById('dlFileSize').textContent =
+    formatFileSize(file.size) + ' · ' + formatDate(file.created_at);
+
+  const before = state.credits;
+  const after = Math.max(0, before - DOWNLOAD_COST);
+
+  document.getElementById('dlBalanceBefore').textContent = before;
+  document.getElementById('dlBalanceAfter').textContent = after;
+
+  document.getElementById('dlStatus').textContent = '';
+  document.getElementById('dlStatus').className = 'form-status';
+
+  const warning = document.getElementById('dlWarning');
+  const confirmBtn = document.getElementById('confirmDownloadBtn');
+
+  if (before < DOWNLOAD_COST) {
+    warning.style.display = 'flex';
+    document.getElementById('dlWarningText').textContent =
+      'Você não possui créditos suficientes. Adquira mais créditos para continuar.';
+    confirmBtn.disabled = true;
+  } else {
+    warning.style.display = 'none';
+    confirmBtn.disabled = false;
+  }
+
+  openModal('downloadModal');
+}
+
+/* =========================================================
+   PACOTES
+   ========================================================= */
+function renderPackages() {
+  const grid = document.getElementById('packagesGrid');
+  if (!grid) return;
+
+  grid.innerHTML = PACKAGES.map(p => `
+    <div class="package ${p.featured ? 'featured' : ''}" onclick="buyPackage(${p.credits}, ${p.price_mzn})">
+      ${p.featured ? '<span class="package-badge">Melhor valor</span>' : ''}
+      <div class="package-amount">${p.credits}</div>
+      <div class="package-unit">créditos</div>
+      <div class="package-price">${formatMZN(p.price_mzn)}</div>
+      <div class="package-note">${escapeHtml(p.note)}</div>
+    </div>
+  `).join('');
+}
+
+/* =========================================================
+   COMPRAR CRÉDITOS
+   ========================================================= */
+let pendingPackage = null;
+
+function setupBuyModal() {
+  document.getElementById('confirmBuyBtn').addEventListener('click', async () => {
+    if (!pendingPackage) return;
+
+    const status = document.getElementById('buyStatus');
+    const btn = document.getElementById('confirmBuyBtn');
+
+    btn.disabled = true;
+    status.className = 'form-status info';
+    status.textContent = 'Processando pagamento...';
+
+    try {
+      const resp = await fetch(SUPABASE_URL + '/functions/v1/purchase-credits', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + state.token
+        },
+        body: JSON.stringify({
+          credits: pendingPackage.credits,
+          price_mzn: pendingPackage.price_mzn
+        })
+      });
+
+      if (!resp.ok) {
+        const body = await resp.json().catch(() => ({}));
+        throw new Error(body.message || 'Falha ao processar pagamento.');
+      }
+
+      state.credits += pendingPackage.credits;
+      try { localStorage.setItem('nc_user_credits', String(state.credits)); } catch (e) {}
+
+      status.className = 'form-status success';
+      status.textContent = 'Pagamento confirmado. Créditos adicionados.';
+      showToast(`${pendingPackage.credits} créditos adicionados.`, 'success');
+
+      await refreshAll();
+
+      setTimeout(() => {
+        closeModal('buyModal');
+        status.textContent = '';
+        btn.disabled = false;
+      }, 1000);
+
+      pendingPackage = null;
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = err.message;
+      btn.disabled = false;
+    }
+  });
+}
+
+function buyPackage(credits, priceMzn) {
+  pendingPackage = { credits, price_mzn: priceMzn };
+
+  document.getElementById('buyPackageName').textContent = credits + ' créditos';
+  document.getElementById('buyPackageCredits').textContent = credits;
+  document.getElementById('buyPackagePrice').textContent = formatMZN(priceMzn);
+  document.getElementById('buyStatus').textContent = '';
+
+  openModal('buyModal');
+}
+
+/* =========================================================
+   NAVEGAÇÃO
+   ========================================================= */
+const pageTitles = {
+  overview: ['Visão geral', 'Bem-vindo ao seu painel'],
+  credits:  ['Créditos',    'Gerencie os seus créditos e faça recargas'],
+  activity: ['Atividades',  'Histórico completo de operações'],
+  logs:     ['Logs',        'Registros enviados pela ferramenta'],
+  files:    ['Ficheiros',   'Cada download consome 1 crédito'],
+  server:   ['Servidor',    'Códigos enviados pela equipa NETCODES'],
+  security: ['Segurança',   'Configurações de segurança da conta'],
+  help:     ['Ajuda',       'Suporte e documentação']
+};
+
+function setupNav() {
+  document.querySelectorAll('.nav-item').forEach(item => {
+    item.addEventListener('click', () => {
+      const page = item.dataset.page;
+      if (page) showPage(page);
+    });
+  });
+}
+
+function showPage(page) {
+  document.querySelectorAll('.content-page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+
+  const contentEl = document.getElementById('page-' + page);
+  if (contentEl) contentEl.classList.add('active');
+
+  const navEl = document.querySelector(`.nav-item[data-page="${page}"]`);
+  if (navEl) navEl.classList.add('active');
+
+  const [title, subtitle] = pageTitles[page] || ['', ''];
+  document.getElementById('pageTitle').textContent = title;
+  document.getElementById('pageSubtitle').textContent = subtitle;
+
+  if (page === 'activity') refreshActivity();
+  if (page === 'logs') refreshLogs();
+  if (page === 'files') refreshFiles();
+  if (page === 'server') refreshServer();
+
+  if (window.innerWidth <= 860) {
+    closeSidebar();
+  }
+}
+
+/* =========================================================
+   SIDEBAR (mobile)
+   ========================================================= */
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (!sidebar) return;
+
+  const isOpen = sidebar.classList.toggle('open');
+  if (overlay) {
+    if (isOpen) overlay.classList.add('visible');
+    else overlay.classList.remove('visible');
+  }
+}
+
+function closeSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('visible');
+}
+
+function setupSidebarOverlay() {
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 860) closeSidebar();
+  });
+}
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+function logout() {
+  try {
+    localStorage.removeItem('nc_logged_in');
+    localStorage.removeItem('nc_user_email');
+    localStorage.removeItem('nc_user_token');
+    localStorage.removeItem('nc_user_id');
+    localStorage.removeItem('nc_user_credits');
+  } catch (e) {}
+  window.location.replace('../index.html');
+}
+
+/* =========================================================
+   MODAIS
+   ========================================================= */
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+  }
+});
+
+/* =========================================================
+   TOASTS
+   ========================================================= */
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  if (!container) return;
+
+  const icons = {
+    success: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    error:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>',
+    info:    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    warning: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>'
+  };
+
+  const toast = document.createElement('div');
+  toast.className = 'toast ' + type;
+  toast.innerHTML = `<div class="toast-icon">${icons[type] || icons.info}</div><div class="toast-body">${escapeHtml(message)}</div>`;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.transition = 'opacity 0.25s, transform 0.25s';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(40px)';
+    setTimeout(() => toast.remove(), 260);
+  }, 3500);
+}
+
+/* =========================================================
+   ALTERAR SENHA
+   ========================================================= */
+function setupPasswordForm() {
+  const btn = document.getElementById('changePasswordBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const current = document.getElementById('currentPassword').value;
+    const next = document.getElementById('newPassword').value;
+    const confirm = document.getElementById('confirmPassword').value;
+    const status = document.getElementById('passwordStatus');
+
+    status.className = 'form-status';
+    status.textContent = '';
+
+    if (!current || !next || !confirm) {
+      status.classList.add('error');
+      status.textContent = 'Preencha todos os campos.';
+      return;
+    }
+
+    if (next.length < 6) {
+      status.classList.add('error');
+      status.textContent = 'A nova senha deve ter pelo menos 6 caracteres.';
+      return;
+    }
+
+    if (next !== confirm) {
+      status.classList.add('error');
+      status.textContent = 'As senhas não coincidem.';
+      return;
+    }
+
+    if (next === current) {
+      status.classList.add('error');
+      status.textContent = 'A nova senha deve ser diferente da atual.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Alterando...';
+    status.classList.add('info');
+    status.textContent = 'Verificando...';
+
+    try {
+      const verifyResp = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY
+        },
+        body: JSON.stringify({ email: state.email, password: current })
+      });
+
+      if (!verifyResp.ok) {
+        throw new Error('Senha atual incorreta.');
+      }
+
+      const verifyData = await verifyResp.json();
+      const token = verifyData.access_token;
+
+      const updateResp = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_KEY,
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({ password: next })
+      });
+
+      if (!updateResp.ok) {
+        const body = await updateResp.json().catch(() => ({}));
+        throw new Error(body.msg || body.message || 'Falha ao alterar a senha.');
+      }
+
+      status.className = 'form-status success';
+      status.textContent = 'Senha alterada com sucesso.';
+      showToast('Senha alterada com sucesso.', 'success');
+
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Alterar senha';
+    }
+  });
+}
+
+/* =========================================================
+   AJUDA
+   ========================================================= */
+function setupHelpForm() {
+  const btn = document.getElementById('sendHelpBtn');
+  if (!btn) return;
+
+  btn.addEventListener('click', async () => {
+    const subject = document.getElementById('helpSubject').value;
+    const message = document.getElementById('helpMessage').value;
+    const status = document.getElementById('helpStatus');
+
+    status.className = 'form-status';
+    status.textContent = '';
+
+    if (!message.trim()) {
+      status.classList.add('error');
+      status.textContent = 'Por favor escreva uma mensagem.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Enviando...';
+
+    try {
+      await supabaseFetch('/rest/v1/help_requests', {
+        method: 'POST',
+        headers: { 'Prefer': 'return=representation' },
+        body: JSON.stringify({
+          user_id: state.userId,
+          email: state.email,
+          subject,
+          message
+        })
+      });
+
+      status.classList.add('success');
+      status.textContent = 'Mensagem enviada com sucesso.';
+      showToast('Mensagem enviada.', 'success');
+
+      document.getElementById('helpMessage').value = '';
+    } catch (err) {
+      status.classList.add('error');
+      status.textContent = err.message;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:16px;height:16px;"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Enviar mensagem';
+    }
+  });
+}
+
+/* =========================================================
+   EXPORTAR ATIVIDADES
+   ========================================================= */
+function exportActivityCSV() {
+  if (!state.activities.length) {
+    showToast('Nenhuma atividade para exportar.', 'info');
+    return;
+  }
+
+  const header = 'Data,Operação,Dispositivo,Créditos,Status\n';
+  const rows = state.activities.map(a =>
+    `"${formatDate(a.created_at)}","${a.operation || ''}","${a.device || ''}","${a.credits_used ?? 0}","${a.status || ''}"`
+  ).join('\n');
+
+  const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `netcodes-activity-${Date.now()}.csv`;
+  link.click();
+
+  URL.revokeObjectURL(url);
+  showToast('Atividades exportadas.', 'success');
+}
+</script>
+
+</body>
+</html>
